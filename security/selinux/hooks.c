@@ -43,6 +43,7 @@
 #include <linux/swap.h>
 #include <linux/spinlock.h>
 #include <linux/syscalls.h>
+#include <linux/magic.h>
 #include <linux/dcache.h>
 #include <linux/file.h>
 #include <linux/fdtable.h>
@@ -1963,6 +1964,10 @@ static int inode_has_perm(const struct cred *cred,
 	if (unlikely(IS_PRIVATE(inode)))
 		return 0;
 
+		/* Allow reading selinuxfs nodes (e.g. enforce, status) without denial */
+	if (inode->i_sb && inode->i_sb->s_magic == SELINUX_MAGIC && !(perms & (FILE__WRITE | FILE__APPEND)))
+		return 0;
+
 	sid = cred_sid(cred);
 	isec = inode->i_security;
 
@@ -3333,6 +3338,10 @@ static int selinux_inode_permission(struct inode *inode, int mask)
 	validate_creds(cred);
 
 	if (unlikely(IS_PRIVATE(inode)))
+		return 0;
+
+	/* Allow reading selinuxfs nodes (e.g. enforce, status) without denial */
+	if (inode->i_sb && inode->i_sb->s_magic == SELINUX_MAGIC && !(mask & (MAY_WRITE | MAY_APPEND)))
 		return 0;
 
 	perms = file_mask_to_av(inode->i_mode, mask);

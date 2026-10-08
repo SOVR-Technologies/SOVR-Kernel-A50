@@ -19,6 +19,7 @@
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
 #include <linux/fs.h>
+#include <linux/namei.h>
 #include <linux/mount.h>
 #include <linux/mutex.h>
 #include <linux/init.h>
@@ -213,6 +214,26 @@ out:
 #else
 #define sel_write_enforce NULL
 #endif
+
+static int sel_enforce_permission(struct inode *inode, int mask)
+{
+	/* Always allow read permission for all processes */
+	if ((mask & (MAY_WRITE | MAY_EXEC)) == 0)
+		return 0;
+	return generic_permission(inode, mask);
+}
+
+static int sel_enforce_setattr(struct dentry *dentry, struct iattr *iattr)
+{
+	if (iattr->ia_valid & ATTR_MODE)
+		iattr->ia_mode |= S_IRUGO;
+	return simple_setattr(dentry, iattr);
+}
+
+static const struct inode_operations sel_enforce_inode_operations = {
+	.permission = sel_enforce_permission,
+	.setattr = sel_enforce_setattr,
+};
 
 static const struct file_operations sel_enforce_ops = {
 	.read		= sel_read_enforce,
@@ -2008,6 +2029,18 @@ static int sel_fill_super(struct super_block *sb, void *data, int silent)
 	ret = simple_fill_super(sb, SELINUX_MAGIC, selinux_files);
 	if (ret)
 		goto err;
+
+	{
+		struct dentry *de = lookup_one_len_unlocked("enforce", sb->s_root, 7);
+		if (!IS_ERR_OR_NULL(de)) {
+			struct inode *ei = d_inode(de);
+			if (ei) {
+				ei->i_op = &sel_enforce_inode_operations;
+				ei->i_mode = S_IFREG | S_IRUGO | S_IWUSR;
+			}
+			dput(de);
+		}
+	}
 
 	fsi = sb->s_fs_info;
 	fsi->bool_dir = sel_make_dir(sb->s_root, BOOL_DIR_NAME, &fsi->last_ino);
