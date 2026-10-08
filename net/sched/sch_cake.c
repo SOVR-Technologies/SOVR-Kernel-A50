@@ -592,11 +592,16 @@ static void cake_update_flowkeys(struct flow_keys *keys,
 	struct nf_conntrack_tuple tuple = {};
 	bool rev = !skb->_nfct;
 
+	enum ip_conntrack_info ctinfo;
+	struct nf_conn *ct;
+
 	if (skb_protocol(skb, true) != htons(ETH_P_IP))
 		return;
 
-	if (!nf_ct_get_tuple_skb(&tuple, skb))
+	ct = nf_ct_get(skb, &ctinfo);
+	if (!ct)
 		return;
+	tuple = ct->tuplehash[CTINFO2DIR(ctinfo)].tuple;
 
 	keys->addrs.v4addrs.src = rev ? tuple.dst.u3.ip : tuple.src.u3.ip;
 	keys->addrs.v4addrs.dst = rev ? tuple.src.u3.ip : tuple.dst.u3.ip;
@@ -2583,8 +2588,7 @@ static void cake_reconfigure(struct Qdisc *sch)
 				  q->buffer_config_limit));
 }
 
-static int cake_change(struct Qdisc *sch, struct nlattr *opt,
-		       struct netlink_ext_ack *extack)
+static int cake_change(struct Qdisc *sch, struct nlattr *opt)
 {
 	struct cake_sched_data *q = qdisc_priv(sch);
 	struct nlattr *tb[TCA_CAKE_MAX + 1];
@@ -2593,8 +2597,7 @@ static int cake_change(struct Qdisc *sch, struct nlattr *opt,
 	if (!opt)
 		return -EINVAL;
 
-	err = nla_parse_nested_deprecated(tb, TCA_CAKE_MAX, opt, cake_policy,
-					  extack);
+	err = nla_parse_nested(tb, TCA_CAKE_MAX, opt, cake_policy, NULL);
 	if (err < 0)
 		return err;
 
@@ -2604,7 +2607,7 @@ static int cake_change(struct Qdisc *sch, struct nlattr *opt,
 		q->flow_mode |= CAKE_FLOW_NAT_FLAG *
 			!!nla_get_u32(tb[TCA_CAKE_NAT]);
 #else
-		NL_SET_ERR_MSG_ATTR(extack, tb[TCA_CAKE_NAT],
+		NL_SET_ERR_MSG_ATTR(NULL, tb[TCA_CAKE_NAT],
 				    "No conntrack support in kernel");
 		return -EOPNOTSUPP;
 #endif
@@ -2717,8 +2720,7 @@ static void cake_destroy(struct Qdisc *sch)
 	kvfree(q->tins);
 }
 
-static int cake_init(struct Qdisc *sch, struct nlattr *opt,
-		     struct netlink_ext_ack *extack)
+static int cake_init(struct Qdisc *sch, struct nlattr *opt)
 {
 	struct cake_sched_data *q = qdisc_priv(sch);
 	int i, j, err;
@@ -2740,13 +2742,13 @@ static int cake_init(struct Qdisc *sch, struct nlattr *opt,
 	qdisc_watchdog_init(&q->watchdog, sch);
 
 	if (opt) {
-		err = cake_change(sch, opt, extack);
+		err = cake_change(sch, opt);
 
 		if (err)
 			return err;
 	}
 
-	err = tcf_block_get(&q->block, &q->filter_list, sch, extack);
+	err = tcf_block_get(&q->block, &q->filter_list);
 	if (err)
 		return err;
 
@@ -2794,7 +2796,7 @@ static int cake_dump(struct Qdisc *sch, struct sk_buff *skb)
 	struct cake_sched_data *q = qdisc_priv(sch);
 	struct nlattr *opts;
 
-	opts = nla_nest_start_noflag(skb, TCA_OPTIONS);
+	opts = nla_nest_start(skb, TCA_OPTIONS);
 	if (!opts)
 		goto nla_put_failure;
 
@@ -2865,7 +2867,7 @@ nla_put_failure:
 
 static int cake_dump_stats(struct Qdisc *sch, struct gnet_dump *d)
 {
-	struct nlattr *stats = nla_nest_start_noflag(d->skb, TCA_STATS_APP);
+	struct nlattr *stats = nla_nest_start(d->skb, TCA_STATS_APP);
 	struct cake_sched_data *q = qdisc_priv(sch);
 	struct nlattr *tstats, *ts;
 	int i;
@@ -2895,7 +2897,7 @@ static int cake_dump_stats(struct Qdisc *sch, struct gnet_dump *d)
 #undef PUT_STAT_U32
 #undef PUT_STAT_U64
 
-	tstats = nla_nest_start_noflag(d->skb, TCA_CAKE_STATS_TIN_STATS);
+	tstats = nla_nest_start(d->skb, TCA_CAKE_STATS_TIN_STATS);
 	if (!tstats)
 		goto nla_put_failure;
 
@@ -2912,7 +2914,7 @@ static int cake_dump_stats(struct Qdisc *sch, struct gnet_dump *d)
 	for (i = 0; i < q->tin_cnt; i++) {
 		struct cake_tin_data *b = &q->tins[q->tin_order[i]];
 
-		ts = nla_nest_start_noflag(d->skb, i + 1);
+		ts = nla_nest_start(d->skb, i + 1);
 		if (!ts)
 			goto nla_put_failure;
 
@@ -2982,8 +2984,7 @@ static void cake_unbind(struct Qdisc *q, unsigned long cl)
 {
 }
 
-static struct tcf_block *cake_tcf_block(struct Qdisc *sch, unsigned long cl,
-					struct netlink_ext_ack *extack)
+static struct tcf_block *cake_tcf_block(struct Qdisc *sch, unsigned long cl)
 {
 	struct cake_sched_data *q = qdisc_priv(sch);
 
@@ -3032,7 +3033,7 @@ static int cake_dump_class_stats(struct Qdisc *sch, unsigned long cl,
 	if (flow) {
 		ktime_t now = ktime_get();
 
-		stats = nla_nest_start_noflag(d->skb, TCA_STATS_APP);
+		stats = nla_nest_start(d->skb, TCA_STATS_APP);
 		if (!stats)
 			return -1;
 
