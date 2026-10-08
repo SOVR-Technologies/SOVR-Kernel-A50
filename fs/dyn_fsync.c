@@ -117,7 +117,9 @@ static int __init dyn_fsync_init(void)
 			pr_warn("dyn_fsync: failed to create sysfs group\n");
 	}
 
-	pr_info("Dynamic Fsync 2.0 initialized (active=%d)\n", dyn_fsync_active);
+	if (dyn_fsync_active)
+		fsync_enabled = false;
+	pr_info("Dynamic Fsync 2.0 initialized (active=%d, fsync_enabled=%d)\n", dyn_fsync_active, fsync_enabled);
 	return 0;
 }
 
