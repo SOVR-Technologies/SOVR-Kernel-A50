@@ -62,7 +62,9 @@ on property:sys.boot_completed=1
     write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 2000
 
     # Storage read-ahead & Multi-Gen LRU
+    write /sys/block/sda/queue/scheduler kyber
     write /sys/block/sda/queue/read_ahead_kb 512
+    write /proc/sys/vm/watermark_scale_factor 200
     write /sys/kernel/mm/lru_gen/min_ttl_ms 1000
 
     # Setup runtime blkio

@@ -2405,12 +2405,12 @@
 					type = "active";
 				};
 				big_switch_on: big-switch-on {
-					temperature = <63000>; /* millicelsius */
+					temperature = <68000>; /* millicelsius */
 					hysteresis = <2000>; /* millicelsius */
 					type = "active";
 				};
 				big_control_temp: big-control-temp {
-					temperature = <83000>; /* millicelsius */
+					temperature = <88000>; /* millicelsius */
 					hysteresis = <5000>; /* millicelsius */
 					type = "passive";
 				};
