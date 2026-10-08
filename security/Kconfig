@@ -4,6 +4,15 @@
 
 menu "Security options"
 
+config INIT_STACK_ALL_ZERO
+	bool "Initialize kernel stack variables at function entry"
+	default y
+	help
+	  This option enables compiler flags to zero-initialize all local
+	  stack variables on function entry, preventing information leaks
+	  and use of uninitialized stack data.
+
+
 source security/keys/Kconfig
 
 config SECURITY_DMESG_RESTRICT

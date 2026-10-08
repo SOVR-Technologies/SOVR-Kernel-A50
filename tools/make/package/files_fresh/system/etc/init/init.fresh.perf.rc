@@ -121,8 +121,8 @@ on property:sys.boot_completed=1 && property:persist.config.chimera.enable=true 
     write /sys/module/mmc_core/parameters/use_spi_crc Y
 
     write /sys/devices/platform/11500000.mali/power_policy adaptive
-    write /sys/devices/platform/11500000.mali/highspeed_clock 764000
-    write /sys/devices/platform/11500000.mali/highspeed_load 60
+    write /sys/devices/platform/11500000.mali/highspeed_clock 839000
+    write /sys/devices/platform/11500000.mali/highspeed_load 50
 
     write /dev/cpuset/top-app/cpus 0-7
     write /dev/cpuset/foreground/cpus 0-3,6-7
@@ -134,9 +134,9 @@ on property:sys.boot_completed=1 && property:persist.config.chimera.enable=true 
 
     write /proc/sys/vm/swappiness 150
     write /proc/sys/vm/direct_swappiness 60
-    write /proc/sys/vm/dirty_background_ratio 10
-    write /proc/sys/vm/dirty_ratio 30
-    write /proc/sys/vm/vfs_cache_pressure 100
+    write /proc/sys/vm/dirty_background_ratio 5
+    write /proc/sys/vm/dirty_ratio 15
+    write /proc/sys/vm/vfs_cache_pressure 60
     write /proc/sys/vm/dirty_expire_centisecs 1500
     write /proc/sys/vm/dirty_writeback_centisecs 3000
 
@@ -196,9 +196,9 @@ on property:sys.boot_completed=1 && property:persist.config.chimera.enable=true,
 
     write /proc/sys/vm/swappiness 100
     write /proc/sys/vm/direct_swappiness 50
-    write /proc/sys/vm/dirty_background_ratio 3
-    write /proc/sys/vm/dirty_ratio 30
-    write /proc/sys/vm/vfs_cache_pressure 200
+    write /proc/sys/vm/dirty_background_ratio 5
+    write /proc/sys/vm/dirty_ratio 15
+    write /proc/sys/vm/vfs_cache_pressure 60
     write /proc/sys/vm/dirty_expire_centisecs 1500
     write /proc/sys/vm/dirty_writeback_centisecs 1500
 
@@ -239,6 +239,13 @@ on property:sys.boot_completed=1 && property:service.camera.running=0 && propert
 
     write /sys/devices/system/cpu/cpufreq/policy0/schedutil/iowait_boost_enable 1
     write /sys/devices/system/cpu/cpufreq/policy4/schedutil/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 500
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 4000
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 250
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 4000
+
 
 ## Standby Battery Life for Gaming Mode
 
@@ -247,8 +254,8 @@ on property:sys.boot_completed=1 && property:persist.config.chimera.enable=true,
     write /sys/module/mmc_core/parameters/use_spi_crc Y
 
     write /sys/devices/platform/11500000.mali/power_policy coarse_demand
-    write /sys/devices/platform/11500000.mali/highspeed_clock 764000
-    write /sys/devices/platform/11500000.mali/highspeed_load 60
+    write /sys/devices/platform/11500000.mali/highspeed_clock 839000
+    write /sys/devices/platform/11500000.mali/highspeed_load 50
 
     write /dev/cpuset/top-app/cpus 0-7
     write /dev/cpuset/foreground/cpus 0-6
@@ -260,9 +267,9 @@ on property:sys.boot_completed=1 && property:persist.config.chimera.enable=true,
     
     write /proc/sys/vm/swappiness 160
     write /proc/sys/vm/direct_swappiness 70
-    write /proc/sys/vm/dirty_background_ratio 15
-    write /proc/sys/vm/dirty_ratio 30
-    write /proc/sys/vm/vfs_cache_pressure 80
+    write /proc/sys/vm/dirty_background_ratio 5
+    write /proc/sys/vm/dirty_ratio 15
+    write /proc/sys/vm/vfs_cache_pressure 60
     write /proc/sys/vm/dirty_expire_centisecs 3000
     write /proc/sys/vm/dirty_writeback_centisecs 3000
 
@@ -303,6 +310,13 @@ on property:sys.boot_completed=1 && property:service.camera.running=0 && propert
     
     write /sys/devices/system/cpu/cpufreq/policy0/schedutil/iowait_boost_enable 1
     write /sys/devices/system/cpu/cpufreq/policy4/schedutil/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 500
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 4000
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 250
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 4000
+
 
 ## Performance Settings - Zest
 
@@ -338,6 +352,13 @@ on property:sys.boot_completed=1 && property:service.camera.running=1 && propert
 
     write /sys/devices/system/cpu/cpufreq/policy0/schedutil/iowait_boost_enable 1
     write /sys/devices/system/cpu/cpufreq/policy4/schedutil/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 500
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 4000
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 250
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 4000
+
 
 ## Camera Performance
 
@@ -373,5 +394,12 @@ on property:sys.boot_completed=1 && property:wlan.p2p.wfdsta=connected
 
     write /sys/devices/system/cpu/cpufreq/policy0/schedutil/iowait_boost_enable 1
     write /sys/devices/system/cpu/cpufreq/policy4/schedutil/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 500
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 4000
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 250
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 4000
+
 
 ## Samsung DeX Performance
