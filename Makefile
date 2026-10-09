@@ -788,6 +788,9 @@ KBUILD_CFLAGS	+= -march=armv8-a+crypto+crc+sha2+aes -mtune=cortex-a53 \
 			-mcpu=cortex-a53+crypto+crc+sha2+aes
 endif
 
+ifeq ($(call clang-ifversion, -lt, 1400, y), y)
+ifeq ($(call clang-ifversion, -lt, 1400, y), y)
+ifeq ($(call clang-ifversion, -lt, 1400, y), y)
 ifdef CONFIG_LLVM_POLLY
 KBUILD_CFLAGS	+= -mllvm -polly \
 		   -mllvm -polly-run-dce \
@@ -796,8 +799,9 @@ KBUILD_CFLAGS	+= -mllvm -polly \
 		   -mllvm -polly-detect-keep-going \
 		   -mllvm -polly-vectorizer=stripmine \
 		   -mllvm -polly-invariant-load-hoisting
-ifeq ($(call clang-ifversion, -lt, 1500, y), y)
-KBUILD_CFLAGS	+= -mllvm -polly-opt-fusion=max
+KBUILD_CFLAGS	+= $(call cc-option,-mllvm -polly-opt-fusion=max)
+endif
+endif
 endif
 endif
 else ifeq ($(cc-name),gcc)

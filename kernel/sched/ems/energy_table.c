@@ -76,12 +76,19 @@ bool ems_get_energy_table_status(void)
 
 inline unsigned int et_get_cpu_mips(unsigned int cpu)
 {
+	if (cpu >= nr_cpu_ids)
+		return 0;
 	return per_cpu(energy_table, cpu).mips;
 }
 
 unsigned int capacity_max_of(unsigned int cpu)
 {
-	struct energy_table *table = &per_cpu(energy_table, cpu);
+	struct energy_table *table;
+
+	if (cpu >= nr_cpu_ids)
+		return 0;
+
+	table = &per_cpu(energy_table, cpu);
 
 	/* If energy table wasn't initialized, return 0 as capacity */
 	if (!table->states)
@@ -92,9 +99,14 @@ unsigned int capacity_max_of(unsigned int cpu)
 
 unsigned long et_get_freq_cap(unsigned int cpu, unsigned long freq)
 {
-	struct energy_table *table = &per_cpu(energy_table, cpu);
+	struct energy_table *table;
 	struct energy_state *state = NULL;
 	int i;
+
+	if (cpu >= nr_cpu_ids)
+		return 0;
+
+	table = &per_cpu(energy_table, cpu);
 
 	for (i = 0; i < table->nr_states; i++) {
 		if (table->states[i].frequency >= freq) {

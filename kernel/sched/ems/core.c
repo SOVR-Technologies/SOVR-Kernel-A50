@@ -1099,6 +1099,11 @@ int select_start_cpu(struct tp_env *env) {
 	int start_cpu = cpumask_first_and(cpu_slowest_mask(), cpu_active_mask);
 	struct cpumask active_fast_mask;
 
+	if (start_cpu >= nr_cpu_ids)
+		start_cpu = cpumask_first(cpu_active_mask);
+	if (start_cpu >= nr_cpu_ids)
+		start_cpu = env->src_cpu;
+
 	/* Avoid recommending fast CPUs during idle as these are inactive */
 	if (pm_freezing)
 		return start_cpu;
@@ -1109,8 +1114,11 @@ int select_start_cpu(struct tp_env *env) {
 		return start_cpu;
 
 	/* Return fast CPU if task is boosted or global boosting */
-	if (env->boosted || ems_boot_boost())
-		start_cpu = cpumask_first(&active_fast_mask);
+	if (env->boosted || ems_boot_boost()) {
+		int fast_cpu = cpumask_first(&active_fast_mask);
+		if (fast_cpu < nr_cpu_ids)
+			start_cpu = fast_cpu;
+	}
 
 	return start_cpu;
 }
@@ -1119,6 +1127,9 @@ static
 bool fast_path_eligible(struct tp_env *env)
 {	
 	int start_cpu = select_start_cpu(env);
+
+	if (start_cpu < 0 || start_cpu >= nr_cpu_ids || env->src_cpu < 0 || env->src_cpu >= nr_cpu_ids)
+		return false;
 
 	/* Cond 1: Task should not be under mulligan migration */
 	if (EMS_PF_GET(env->p) & EMS_PF_MULLIGAN)
