@@ -1,16 +1,14 @@
 name: Development Build (Galaxy A50)
 
 on:
-  push:
-    branches:
-      - 'master'
-      - 'main'
-      - 'wip-*'
   workflow_dispatch:
     inputs:
       version:
         description: 'Build KSU'
-        required: false     
+        required: false
+
+permissions:
+  contents: write     
 
 jobs:
   oneui-s-e:
@@ -30,14 +28,14 @@ jobs:
         timezoneWindows: "Philippine Standard Time"
 
     - name: Export build branch
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
       id: branch_name
 
     - name: Update Debian/Ubuntu Repositories
       run: sudo apt-get update
 
     - name: Install Debian/Ubuntu dependencies
-      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
+      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 jq -y && (sudo apt-get install libncurses5 -y || sudo apt-get install libncurses6 libncurses-dev -y || true)
 
     - name: Build Mint kernel
       run: |
@@ -48,7 +46,7 @@ jobs:
     - name: Prepare release package
       run: |
           mkdir -p ./release
-          mv -f `find ./ -iname MintBeta-*.zip` ./release/
+          mv -f `find ./ -maxdepth 2 -iname "SOVR-Kernel-*.zip" -o -iname "MintBeta-*.zip" -o -iname "*.zip"` ./release/ 2>/dev/null || true
 
     - name: Upload release package
       uses: actions/upload-artifact@v4
@@ -99,14 +97,14 @@ jobs:
         timezoneWindows: "Philippine Standard Time"
 
     - name: Export build branch
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
       id: branch_name
 
     - name: Update Debian/Ubuntu Repositories
       run: sudo apt-get update
 
     - name: Install Debian/Ubuntu dependencies
-      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
+      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 jq -y && (sudo apt-get install libncurses5 -y || sudo apt-get install libncurses6 libncurses-dev -y || true)
 
     - name: Build Mint kernel
       run: |
@@ -117,7 +115,7 @@ jobs:
     - name: Prepare release package
       run: |
           mkdir -p ./release
-          mv -f `find ./ -iname MintBeta-*.zip` ./release/
+          mv -f `find ./ -maxdepth 2 -iname "SOVR-Kernel-*.zip" -o -iname "MintBeta-*.zip" -o -iname "*.zip"` ./release/ 2>/dev/null || true
 
     - name: Upload release package
       uses: actions/upload-artifact@v4
@@ -161,14 +159,14 @@ jobs:
         timezoneWindows: "Philippine Standard Time"
 
     - name: Export build branch
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
       id: branch_name
 
     - name: Update Debian/Ubuntu Repositories
       run: sudo apt-get update
 
     - name: Install Debian/Ubuntu dependencies
-      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
+      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 jq -y && (sudo apt-get install libncurses5 -y || sudo apt-get install libncurses6 libncurses-dev -y || true)
 
     - name: Build Mint kernel
       run: |
@@ -179,7 +177,7 @@ jobs:
     - name: Prepare release package
       run: |
           mkdir -p ./release
-          mv -f `find ./ -iname MintBeta-*.zip` ./release/
+          mv -f `find ./ -maxdepth 2 -iname "SOVR-Kernel-*.zip" -o -iname "MintBeta-*.zip" -o -iname "*.zip"` ./release/ 2>/dev/null || true
 
     - name: Prepare build config artifact
       run: |
@@ -224,14 +222,14 @@ jobs:
         timezoneWindows: "Philippine Standard Time"
 
     - name: Export build branch
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
       id: branch_name
 
     - name: Update Debian/Ubuntu Repositories
       run: sudo apt-get update
 
     - name: Install Debian/Ubuntu dependencies
-      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
+      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 jq -y && (sudo apt-get install libncurses5 -y || sudo apt-get install libncurses6 libncurses-dev -y || true)
 
     - name: Build Mint kernel
       run: |
@@ -242,7 +240,7 @@ jobs:
     - name: Prepare release package
       run: |
           mkdir -p ./release
-          mv -f `find ./ -iname MintBeta-*.zip` ./release/
+          mv -f `find ./ -maxdepth 2 -iname "SOVR-Kernel-*.zip" -o -iname "MintBeta-*.zip" -o -iname "*.zip"` ./release/ 2>/dev/null || true
 
     - name: Prepare build config artifact
       run: |
@@ -287,14 +285,14 @@ jobs:
         timezoneWindows: "Philippine Standard Time"
 
     - name: Export build branch
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
       id: branch_name
 
     - name: Update Debian/Ubuntu Repositories
       run: sudo apt-get update
 
     - name: Install Debian/Ubuntu dependencies
-      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
+      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 jq -y && (sudo apt-get install libncurses5 -y || sudo apt-get install libncurses6 libncurses-dev -y || true)
 
     - name: Build Mint kernel
       run: |
@@ -305,7 +303,7 @@ jobs:
     - name: Prepare release package
       run: |
           mkdir -p ./release
-          mv -f `find ./ -iname MintBeta-*.zip` ./release/
+          mv -f `find ./ -maxdepth 2 -iname "SOVR-Kernel-*.zip" -o -iname "MintBeta-*.zip" -o -iname "*.zip"` ./release/ 2>/dev/null || true
 
     - name: Prepare build config artifact
       run: |
@@ -350,14 +348,14 @@ jobs:
         timezoneWindows: "Philippine Standard Time"
 
     - name: Export build branch
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
       id: branch_name
 
     - name: Update Debian/Ubuntu Repositories
       run: sudo apt-get update
 
     - name: Install Debian/Ubuntu dependencies
-      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
+      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 jq -y && (sudo apt-get install libncurses5 -y || sudo apt-get install libncurses6 libncurses-dev -y || true)
 
     - name: Build Mint kernel
       run: |
@@ -368,7 +366,7 @@ jobs:
     - name: Prepare release package
       run: |
           mkdir -p ./release
-          mv -f `find ./ -iname MintBeta-*.zip` ./release/
+          mv -f `find ./ -maxdepth 2 -iname "SOVR-Kernel-*.zip" -o -iname "MintBeta-*.zip" -o -iname "*.zip"` ./release/ 2>/dev/null || true
 
     - name: Prepare build config artifact
       run: |
@@ -413,14 +411,14 @@ jobs:
         timezoneWindows: "Philippine Standard Time"
 
     - name: Export build branch
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
       id: branch_name
 
     - name: Update Debian/Ubuntu Repositories
       run: sudo apt-get update
 
     - name: Install Debian/Ubuntu dependencies
-      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
+      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 jq -y && (sudo apt-get install libncurses5 -y || sudo apt-get install libncurses6 libncurses-dev -y || true)
 
     - name: Build Mint kernel
       run: |
@@ -431,7 +429,7 @@ jobs:
     - name: Prepare release package
       run: |
           mkdir -p ./release
-          mv -f `find ./ -iname MintBeta-*.zip` ./release/
+          mv -f `find ./ -maxdepth 2 -iname "SOVR-Kernel-*.zip" -o -iname "MintBeta-*.zip" -o -iname "*.zip"` ./release/ 2>/dev/null || true
 
     - name: Prepare build config artifact
       run: |
@@ -476,14 +474,14 @@ jobs:
         timezoneWindows: "Philippine Standard Time"
 
     - name: Export build branch
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
       id: branch_name
 
     - name: Update Debian/Ubuntu Repositories
       run: sudo apt-get update
 
     - name: Install Debian/Ubuntu dependencies
-      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
+      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 jq -y && (sudo apt-get install libncurses5 -y || sudo apt-get install libncurses6 libncurses-dev -y || true)
 
     - name: Build Mint kernel
       run: |
@@ -494,7 +492,7 @@ jobs:
     - name: Prepare release package
       run: |
           mkdir -p ./release
-          mv -f `find ./ -iname MintBeta-*.zip` ./release/
+          mv -f `find ./ -maxdepth 2 -iname "SOVR-Kernel-*.zip" -o -iname "MintBeta-*.zip" -o -iname "*.zip"` ./release/ 2>/dev/null || true
 
     - name: Upload release package
       uses: actions/upload-artifact@v4
@@ -546,14 +544,14 @@ jobs:
         timezoneWindows: "Philippine Standard Time"
 
     - name: Export build branch
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
       id: branch_name
 
     - name: Update Debian/Ubuntu Repositories
       run: sudo apt-get update
 
     - name: Install Debian/Ubuntu dependencies
-      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
+      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 jq -y && (sudo apt-get install libncurses5 -y || sudo apt-get install libncurses6 libncurses-dev -y || true)
 
     - name: Build Mint kernel
       run: |
@@ -564,7 +562,7 @@ jobs:
     - name: Prepare release package
       run: |
           mkdir -p ./release
-          mv -f `find ./ -iname MintBeta-*.zip` ./release/
+          mv -f `find ./ -maxdepth 2 -iname "SOVR-Kernel-*.zip" -o -iname "MintBeta-*.zip" -o -iname "*.zip"` ./release/ 2>/dev/null || true
 
     - name: Prepare build config artifact
       run: |
@@ -608,10 +606,10 @@ jobs:
         timezoneWindows: "Philippine Standard Time"
 
     - name: Merge Releases
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
-        name: Release
         path: release
+        merge-multiple: true
 
     - name: Delete build config files
       run: |
