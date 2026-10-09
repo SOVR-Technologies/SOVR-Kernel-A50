@@ -1865,7 +1865,7 @@ static s64 cpuset_read_s64(struct cgroup_subsys_state *css, struct cftype *cft)
 	return 0;
 }
 
-#ifdef CONFIG_UCLAMP_TASK_GROUP
+#if defined(CONFIG_UCLAMP_TASK_GROUP) && defined(CONFIG_UCLAMP_ASSIST)
 int cpu_uclamp_min_show_wrapper(struct seq_file *sf, void *v);
 int cpu_uclamp_max_show_wrapper(struct seq_file *sf, void *v);
 
@@ -1988,7 +1988,7 @@ static struct cftype files[] = {
 		.write_u64 = cpuset_write_u64,
 		.private = FILE_MEMORY_PRESSURE_ENABLED,
 	},
-#ifdef CONFIG_UCLAMP_TASK_GROUP
+#if defined(CONFIG_UCLAMP_TASK_GROUP) && defined(CONFIG_UCLAMP_ASSIST)
 	{
 		.name = "uclamp.min",
 		.flags = CFTYPE_NOT_ON_ROOT,
