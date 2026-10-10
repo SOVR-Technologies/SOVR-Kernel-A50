@@ -19,6 +19,9 @@
 #include "ksu.h"
 #include "infra/file_wrapper.h"
 #include "selinux/selinux.h"
+#ifdef CONFIG_KSU_SUSFS
+#include <linux/susfs.h>
+#endif
 
 extern void __init ksu_lsm_hook_init(void);
 extern int ksu_handle_execveat_sucompat(int *fd, struct filename **filename_ptr,
@@ -75,6 +78,9 @@ bool ksu_late_loaded;
 
 int __init kernelsu_init(void)
 {
+#ifdef CONFIG_KSU_SUSFS
+	susfs_init();
+#endif
 #ifdef MODULE
 	ksu_late_loaded = (current->pid != 1);
 #else

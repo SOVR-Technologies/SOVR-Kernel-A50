@@ -60,3 +60,93 @@ config KSU_KPROBES_HOOK
 	  This should not be used on kernel below 5.10.
 
 endmenu
+
+menu "KernelSU - SUSFS"
+config KSU_SUSFS
+    bool "KernelSU addon - SUSFS"
+    depends on KSU
+    default y
+    help
+      Patch and Enable SUSFS to kernel with KernelSU.
+
+config KSU_SUSFS_HAS_MAGIC_MOUNT
+    bool "Support auto hide features for Magic Mount"
+    depends on KSU
+    default y
+
+config KSU_SUSFS_SUS_PATH
+    bool "Enable to configure sus path"
+    depends on KSU_SUSFS
+    default y
+
+config KSU_SUSFS_SUS_MOUNT
+    bool "Enable to configure sus mount"
+    depends on KSU_SUSFS
+    default y
+
+config KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT
+    bool "Enable to auto add sus mount for ksu default mounts"
+    depends on KSU_SUSFS_SUS_MOUNT
+    default y
+
+config KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT
+    bool "Enable to auto add sus mount for bind mounts"
+    depends on KSU_SUSFS_SUS_MOUNT
+    default y
+
+config KSU_SUSFS_SUS_KSTAT
+    bool "Enable to configure sus kstat"
+    depends on KSU_SUSFS
+    default y
+
+config KSU_SUSFS_SUS_OVERLAYFS
+    bool "Enable to automatically spoof kstat and kstatfs for overlayed files/directories"
+    depends on KSU_SUSFS
+    default y
+
+config KSU_SUSFS_TRY_UMOUNT
+    bool "Enable to configure try umount"
+    depends on KSU_SUSFS
+    default y
+
+config KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT
+    bool "Enable to auto add try umount for bind mounts"
+    depends on KSU_SUSFS_TRY_UMOUNT
+    default y
+
+config KSU_SUSFS_SPOOF_UNAME
+    bool "Enable to spoof uname"
+    depends on KSU_SUSFS
+    default y
+
+config KSU_SUSFS_ENABLE_LOG
+    bool "Enable logging susfs log to kernel"
+    depends on KSU_SUSFS
+    default y
+
+config KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS
+    bool "Enable to automatically hide ksu and susfs symbols from /proc/kallsyms"
+    depends on KSU_SUSFS
+    default y
+
+config KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG
+    bool "Enable to spoof /proc/cmdline or /proc/bootconfig"
+    depends on KSU_SUSFS
+    default y
+
+config KSU_SUSFS_OPEN_REDIRECT
+    bool "Enable to support open redirect"
+    depends on KSU_SUSFS
+    default y
+
+config KSU_SUSFS_SUS_SU
+    bool "Enable sus_su support"
+    depends on KSU_SUSFS && KPROBES && HAVE_KPROBES && KPROBE_EVENTS && KSU_KPROBES_HOOK
+    default n
+
+config KSU_SUSFS_SUS_MAP
+    bool "Enable to support sus map"
+    depends on KSU_SUSFS
+    default y
+
+endmenu
