@@ -177,7 +177,6 @@ static int apply_kernelsu_rules_fn(void *ptr)
 #ifdef CONFIG_KSU_SUSFS
     // Allow umount in zygote process without installing zygisk
     ksu_allow(db, "zygote", "labeledfs", "filesystem", "unmount");
-    susfs_set_batch_sid();
 #endif
 
     return 0;
@@ -264,6 +263,9 @@ do_stop_machine:
 out_flush:
 	smp_mb();
 	reset_avc_cache();
+#endif
+#ifdef CONFIG_KSU_SUSFS
+	susfs_set_batch_sid();
 #endif
 }
 
