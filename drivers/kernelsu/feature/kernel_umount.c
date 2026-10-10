@@ -198,12 +198,6 @@ void ksu_try_umount(const char *mnt, bool check_mnt, int flags, uid_t uid)
 
 void susfs_try_umount_all(uid_t uid) {
 	susfs_try_umount(uid);
-	/* For Legacy KSU only */
-	ksu_try_umount("/system", true, 0, uid);
-	ksu_try_umount("/system_ext", true, 0, uid);
-	ksu_try_umount("/vendor", true, 0, uid);
-	ksu_try_umount("/product", true, 0, uid);
-	ksu_try_umount("/odm", true, 0, uid);
 	ksu_try_umount("/data/adb/modules", false, MNT_DETACH, uid);
 	/* For both Legacy KSU and Magic Mount KSU */
 	ksu_try_umount("/debug_ramdisk", true, MNT_DETACH, uid);
