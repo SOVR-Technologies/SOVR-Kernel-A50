@@ -48,6 +48,7 @@ on init
     chmod 0644 /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us
 
 on property:sys.boot_completed=1
+    write /sys/kernel/sovr_boot_booster/active 0
     # Fresh Performance Kit version
     setprop persist.sys.zest.perf_version 14.2.1.3
 

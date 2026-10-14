@@ -104,11 +104,9 @@ queue_ra_store(struct request_queue *q, const char *page, size_t count)
 	ssize_t ret;
 	static const char temp[] = "temporary ";
 
-	/* IOPP-ra-v2.0.4.14 */
-	if (strncmp(page, temp, sizeof(temp) - 1) != 0)
-		return count;
-
-	page += sizeof(temp) - 1;
+	/* Support both standard values and legacy Samsung "temporary " format */
+	if (strncmp(page, temp, sizeof(temp) - 1) == 0)
+		page += sizeof(temp) - 1;
 
 	ret = queue_var_store(&ra_kb, page, count);
 

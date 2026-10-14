@@ -201,4 +201,17 @@ config SENSORS_FP_USI_NUMBER
 	int "Fingerprint usi gpio number"
 	default 0
 
+
+config SOVR_BOOT_BOOSTER
+	bool "SOVR Early Boot CPU and I/O Booster"
+	depends on ARCH_EXYNOS
+	default y
+	help
+	  Accelerates Android early boot sequence by locking LITTLE and BIG
+	  clusters to high performance frequencies, keeping all CPU cores
+	  online, and expanding block device I/O read-ahead to 2048 KB.
+	  Automatically deactivates and restores balanced values (512 KB ra)
+	  upon Android boot completion (sys.boot_completed=1) or after a safety
+	  fallback timeout (50 seconds).
+
 endif

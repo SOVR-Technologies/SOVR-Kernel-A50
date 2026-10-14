@@ -22,3 +22,6 @@ on boot
 on load_persist_props_action
    setprop persist.sys.zram.daily_quota_remain ${ro.sys.kernelmemory.nandswap.daily_quota}
    setprop sys.sysctl.zram_balance_ratio ${ro.nandswap.lru_ratio}
+
+on property:sys.boot_completed=1
+   write /sys/kernel/sovr_boot_booster/active 0

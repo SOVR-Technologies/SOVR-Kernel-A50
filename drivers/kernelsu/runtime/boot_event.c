@@ -1,3 +1,4 @@
+#include <soc/samsung/sovr_boot_booster.h>
 #include <linux/err.h>
 #include <linux/fs.h>
 #include <linux/namei.h>
@@ -76,4 +77,5 @@ void on_boot_completed(void)
     pr_info("on_boot_completed!\n");
     track_throne(true);
     ksu_avc_spoof_late_init();
+    sovr_boot_boost_finish();
 }

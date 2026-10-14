@@ -74,3 +74,6 @@ obj-$(CONFIG_EXYNOS_PSTATE_HAFM_TB)	+= exynos-hafm-tb.o
 
 # secmem
 obj-$(CONFIG_ARCH_EXYNOS)       += secmem.o
+
+# SOVR Boot Booster
+obj-$(CONFIG_SOVR_BOOT_BOOSTER) += sovr_boot_booster.o
