@@ -376,7 +376,7 @@ if [[ ! -z ${BUILD_KERNEL_BRANCH} ]]; then
 		fi
 	fi
 else
-	SOVR_VERSION="v4.0-beta3"
+	SOVR_VERSION="v4.0"
 	if [[ ${BUILD_KERNEL_KSU} == 'true' ]]; then
 		FILE_OUTPUT=SOVR-Kernel-${SOVR_VERSION}.A${BUILD_ANDROID_PLATFORM}_${FILE_KERNEL_CODE}${ZIP_ONEUI_VERSION}_${BUILD_DEVICE_NAME^}_KSU.zip
 		LOCALVERSION=" - SOVR-${SOVR_VERSION}-KSU"
@@ -715,6 +715,11 @@ if [[ ${BUILD_KERNEL_CODE} == 'recovery' ]]; then
 else
 	build_image
 	build_package
+fi
+
+# Restore default One UI DTB if AOSP was built
+if [[ ${BUILD_KERNEL_CODE} == "aosp" ]]; then
+	git checkout arch/arm64/boot/dts/exynos/exynos9610.dts 2>/dev/null || true
 fi
 
 TIME_NOW=$(date +%s)

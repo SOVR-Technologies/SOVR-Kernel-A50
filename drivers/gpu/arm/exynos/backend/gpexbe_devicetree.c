@@ -95,11 +95,11 @@ static int read_interactive_info_array(void)
 
 	gpexbe_devicetree_read_u32_array("interactive_info", interactive_info, 3);
 
-	/* TODO: change default value to something more sensible */
+	/* SOVR: Enforce 839MHz minimum floor and 50% load threshold for rapid UI compositing */
 	dt_info.interactive_info.highspeed_clock =
-		interactive_info[0] == 0 ? 500 : (u32)interactive_info[0];
+		interactive_info[0] < 839000 ? 839000 : (u32)interactive_info[0];
 	dt_info.interactive_info.highspeed_load =
-		interactive_info[1] == 0 ? 100 : (u32)interactive_info[1];
+		(interactive_info[1] == 0 || interactive_info[1] > 50) ? 50 : (u32)interactive_info[1];
 	dt_info.interactive_info.highspeed_delay =
 		interactive_info[2] == 0 ? 0 : (u32)interactive_info[2];
 

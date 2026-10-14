@@ -55,58 +55,52 @@ if [ -z $fresh ]; then
 	fi
 fi
 
-if [ ! -z $oneui ]; then
-	if [ -z $fresh ]; then
-  		sdk_ver=$(file_getprop /vendor/build.prop ro.vendor.build.version.sdk);
-  		if [ "${sdk_ver}" == "30" ]; then
-			ui_print "  - One UI detected!"
-			ui_print "    - Enabling Pageboost and RAM Plus"
-			patch_prop /vendor/build.prop 'ro.nandswap.level' '2'
-			patch_prop /vendor/build.prop 'ro.nandswap.lru_ratio' '50'
-			patch_prop /vendor/build.prop 'ro.sys.kernelmemory.nandswap.ux_support' 'true'
-			patch_prop /vendor/build.prop 'ro.sys.kernelmemory.nandswap.daily_quota' '786432'
-			patch_prop /vendor/build.prop 'ro.sys.kernelmemory.nandswap.daily_quota_limit' '2359296'
-			patch_prop /vendor/build.prop 'ro.config.pageboost.vramdisk.minimize' "true"
-			patch_prop /vendor/build.prop 'ro.config.pageboost.active_launch.enabled' "true"
-			patch_prop /vendor/build.prop 'ro.config.pageboost.io_prefetch.enabled' "true"
-			patch_prop /vendor/build.prop 'ro.config.pageboost.io_prefetch.level' "3"
+if [ ! -z "$oneui" ] || [ ! -z "$fresh" ]; then
+	sdk_ver=$(file_getprop /vendor/build.prop ro.vendor.build.version.sdk);
+	[ -z "$sdk_ver" ] && sdk_ver=$(file_getprop /system_root/system/build.prop ro.build.version.sdk);
 
-			cp -rf $AK_FOLDER/files_oneui/system/etc/init/init.mint.rc /system/etc/init/init.mint.rc
-			cp -rf $AK_FOLDER/files_oneui/system/etc/init/init.mint.rc /system_root/system/etc/init/init.mint.rc
-			cp -rf $AK_FOLDER/files_oneui/vendor/etc/fstab.sqzr /vendor/etc/fstab.sqzr
+	if [ "${sdk_ver}" == "30" ]; then
+		ui_print "  - One UI 3 detected!"
+		ui_print "    - Enabling Pageboost and RAM Plus"
+		patch_prop /vendor/build.prop 'ro.nandswap.level' '2'
+		patch_prop /vendor/build.prop 'ro.nandswap.lru_ratio' '50'
+		patch_prop /vendor/build.prop 'ro.sys.kernelmemory.nandswap.ux_support' 'true'
+		patch_prop /vendor/build.prop 'ro.sys.kernelmemory.nandswap.daily_quota' '786432'
+		patch_prop /vendor/build.prop 'ro.sys.kernelmemory.nandswap.daily_quota_limit' '2359296'
+		patch_prop /vendor/build.prop 'ro.config.pageboost.vramdisk.minimize' "true"
+		patch_prop /vendor/build.prop 'ro.config.pageboost.active_launch.enabled' "true"
+		patch_prop /vendor/build.prop 'ro.config.pageboost.io_prefetch.enabled' "true"
+		patch_prop /vendor/build.prop 'ro.config.pageboost.io_prefetch.level' "3"
 
-			chmod 644 /system/etc/init/init.mint.rc
-			chmod 644 /system_root/system/etc/init/init.mint.rc
-			chmod 644 /vendor/etc/fstab.sqzr
+		cp -rf $AK_FOLDER/files_oneui/system/etc/init/init.mint.rc /system/etc/init/init.mint.rc
+		cp -rf $AK_FOLDER/files_oneui/system/etc/init/init.mint.rc /system_root/system/etc/init/init.mint.rc
+		cp -rf $AK_FOLDER/files_oneui/vendor/etc/fstab.sqzr /vendor/etc/fstab.sqzr
 
-			# Disable SSWAP for RAM Plus and Pageboost
-			remove_section ${VENDOR_INIT_RC} 'service swapon /system/bin/sswap -s -z -f 2048' 'oneshot'
-			replace_string ${VENDOR_INIT_RC} 'swapon_all /vendor/etc/fstab.dummy' 'swapon_all /vendor/etc/fstab.exynos9610' 'swapon_all /vendor/etc/fstab.sqzr' global
-			replace_string ${VENDOR_INIT_RC} 'swapon_all /vendor/etc/fstab.dummy' 'swapon_all /vendor/etc/fstab.model' 'swapon_all /vendor/etc/fstab.sqzr' global
-			replace_string ${VENDOR_INIT_RC} 'swapon_all /vendor/etc/fstab.dummy' 'swapon_all /vendor/etc/fstab.zram' 'swapon_all /vendor/etc/fstab.sqzr' global
-			append_file ${VENDOR_INIT_RC} 'swapon_all /vendor/etc/fstab.sqzr' init.ramplus.rc
-			append_file ${VENDOR_INIT_RC} 'start pageboostd' init.pageboost.rc
-		else
-			ui_print "  - One UI 4 detected! RAM Plus is already enabled!"
-			ui_print "    - Installing SOVR performance profile (Zest)..."
-			cp -rf $AK_FOLDER/files_fresh/system/etc/init/init.fresh.perf.rc /system/etc/init/init.fresh.perf.rc
-			cp -rf $AK_FOLDER/files_fresh/system/etc/init/init.fresh.perf.rc /system_root/system/etc/init/init.fresh.perf.rc
-			chmod 644 /system/etc/init/init.fresh.perf.rc
-			chmod 644 /system_root/system/etc/init/init.fresh.perf.rc
-  		fi
+		chmod 644 /system/etc/init/init.mint.rc
+		chmod 644 /system_root/system/etc/init/init.mint.rc
+		chmod 644 /vendor/etc/fstab.sqzr
+
+		# Disable SSWAP for RAM Plus and Pageboost
+		remove_section ${VENDOR_INIT_RC} 'service swapon /system/bin/sswap -s -z -f 2048' 'oneshot'
+		replace_string ${VENDOR_INIT_RC} 'swapon_all /vendor/etc/fstab.dummy' 'swapon_all /vendor/etc/fstab.exynos9610' 'swapon_all /vendor/etc/fstab.sqzr' global
+		replace_string ${VENDOR_INIT_RC} 'swapon_all /vendor/etc/fstab.dummy' 'swapon_all /vendor/etc/fstab.model' 'swapon_all /vendor/etc/fstab.sqzr' global
+		replace_string ${VENDOR_INIT_RC} 'swapon_all /vendor/etc/fstab.dummy' 'swapon_all /vendor/etc/fstab.zram' 'swapon_all /vendor/etc/fstab.sqzr' global
+		append_file ${VENDOR_INIT_RC} 'swapon_all /vendor/etc/fstab.sqzr' init.ramplus.rc
+		append_file ${VENDOR_INIT_RC} 'start pageboostd' init.pageboost.rc
+	elif [ "${sdk_ver}" == "34" ] || [ "${sdk_ver}" == "35" ]; then
+		ui_print "  - One UI 6+ / Fresh 6 detected (Android 14+)!"
+		ui_print "    - Installing SOVR performance profile (Zest)..."
+		cp -rf $AK_FOLDER/files_fresh/system/etc/init/init.fresh.perf.rc /system/etc/init/init.fresh.perf.rc
+		cp -rf $AK_FOLDER/files_fresh/system/etc/init/init.fresh.perf.rc /system_root/system/etc/init/init.fresh.perf.rc
+		chmod 644 /system/etc/init/init.fresh.perf.rc
+		chmod 644 /system_root/system/etc/init/init.fresh.perf.rc
 	else
-  		sdk_ver=$(file_getprop /system_root/system/build.prop ro.build.version.sdk);
-		ui_print "  - FreshROMs detected! RAM Plus is already enabled!"
-
-		fresh_codename=$(file_getprop "/system_root/system/system_ext/etc/fresh.prop" "ro.fresh.build.codename")
-
-		if [ "${fresh4}" == "1" ]; then
-			ui_print "    - Installing Fresh performance profile (Zest)..."
-			cp -rf $AK_FOLDER/files_fresh/system/etc/init/init.fresh.perf.rc /system/etc/init/init.fresh.perf.rc
-			cp -rf $AK_FOLDER/files_fresh/system/etc/init/init.fresh.perf.rc /system_root/system/etc/init/init.fresh.perf.rc
-			chmod 644 /system/etc/init/init.fresh.perf.rc
-			chmod 644 /system_root/system/etc/init/init.fresh.perf.rc
-		fi
+		ui_print "  - One UI 4/5 / Fresh 4/5 detected (Android 12/13)!"
+		ui_print "    - Installing SOVR performance profile (Zest)..."
+		cp -rf $AK_FOLDER/files_fresh/system/etc/init/init.fresh.perf.rc /system/etc/init/init.fresh.perf.rc
+		cp -rf $AK_FOLDER/files_fresh/system/etc/init/init.fresh.perf.rc /system_root/system/etc/init/init.fresh.perf.rc
+		chmod 644 /system/etc/init/init.fresh.perf.rc
+		chmod 644 /system_root/system/etc/init/init.fresh.perf.rc
 	fi
 else
 	ui_print "  - AOSP ROM detected!"
