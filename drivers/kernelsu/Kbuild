@@ -4,6 +4,8 @@ kernelsu-objs += core/susfs_prctl.o
 kernelsu-objs += compat/kernel_compat.o
 kernelsu-objs += feature/kernel_umount.o
 kernelsu-objs += feature/sucompat.o
+kernelsu-objs += feature/module_blacklist.o
+kernelsu-objs += feature/shell_su_adb_only.o
 
 kernelsu-objs += hook/hook_manager.o
 kernelsu-objs += hook/lsm_hooks.o
@@ -80,8 +82,8 @@ endif
 endif
 
 # Calculate version if git version is available
-KSU_VERSION := 33333
-KSU_VERSION_TAG := v3.4.1
+KSU_VERSION := 33355
+KSU_VERSION_TAG := v3.4.2
 $(info -- KernelSU-Next version: $(KSU_VERSION))
 $(info -- KernelSU-Next tag: $(KSU_VERSION_TAG))
 ccflags-y += -DKSU_VERSION=$(KSU_VERSION)

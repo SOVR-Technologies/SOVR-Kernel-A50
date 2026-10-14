@@ -22,6 +22,7 @@
 static u32 cached_su_sid __read_mostly = 0;
 static u32 cached_zygote_sid __read_mostly = 0;
 static u32 cached_init_sid __read_mostly = 0;
+static u32 cached_adbd_sid __read_mostly = 0;
 u32 ksu_file_sid __read_mostly = 0;
 
 static int transive_to_domain(const char *domain, struct cred *cred)
@@ -243,6 +244,11 @@ bool is_zygote(const struct cred *cred)
 bool is_init(const struct cred *cred)
 {
     return is_sid_match(cred, cached_init_sid, INIT_CONTEXT);
+}
+
+bool is_adbd(const struct cred *cred)
+{
+    return is_sid_match(cred, cached_adbd_sid, ADBD_CONTEXT);
 }
 
 #ifdef CONFIG_KSU_SUSFS

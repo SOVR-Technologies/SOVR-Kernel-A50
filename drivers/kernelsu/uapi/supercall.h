@@ -17,7 +17,7 @@ static const __u8 KSU_UMOUNT_GETLIST = 108;
 static const __u32 GET_SULOG_DUMP_V2 = 10010;
 static const __u32 CHANGE_KSUVER = 10011;
 static const __u32 CHANGE_SPOOF_UNAME = 10012;
-static const __u32 KERNEL_SU_UAPI_VERSION = 4;
+static const __u32 KERNEL_SU_UAPI_VERSION = 5;
 
 struct ksu_become_daemon_cmd {
     __u8 token[65]; /* Input: daemon token (null-terminated) */
@@ -112,8 +112,12 @@ struct ksu_set_app_profile_cmd {
 struct ksu_get_feature_cmd {
     __u32 feature_id; /* Input: feature ID (enum ksu_feature_id) */
     __u64 value; /* Output: feature value/state */
-    __u8 supported; /* Output: true if feature is supported, false otherwise */
+    __u8 supported; /* Output: KSU_FEATURE_FLAG_* bits, 0 if feature is not supported */
 };
+
+#define KSU_FEATURE_FLAG_SUPPORTED (1 << 0)
+/* Value is forced by boot config (force_feature param), SET_FEATURE is refused */
+#define KSU_FEATURE_FLAG_FORCED (1 << 1)
 
 struct ksu_set_feature_cmd {
     __u32 feature_id; /* Input: feature ID (enum ksu_feature_id) */
