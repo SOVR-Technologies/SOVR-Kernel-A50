@@ -88,6 +88,11 @@ if [ ! -z $oneui ]; then
 			append_file ${VENDOR_INIT_RC} 'start pageboostd' init.pageboost.rc
 		else
 			ui_print "  - One UI 4 detected! RAM Plus is already enabled!"
+			ui_print "    - Installing SOVR performance profile (Zest)..."
+			cp -rf $AK_FOLDER/files_fresh/system/etc/init/init.fresh.perf.rc /system/etc/init/init.fresh.perf.rc
+			cp -rf $AK_FOLDER/files_fresh/system/etc/init/init.fresh.perf.rc /system_root/system/etc/init/init.fresh.perf.rc
+			chmod 644 /system/etc/init/init.fresh.perf.rc
+			chmod 644 /system_root/system/etc/init/init.fresh.perf.rc
   		fi
 	else
   		sdk_ver=$(file_getprop /system_root/system/build.prop ro.build.version.sdk);
@@ -96,10 +101,11 @@ if [ ! -z $oneui ]; then
 		fresh_codename=$(file_getprop "/system_root/system/system_ext/etc/fresh.prop" "ro.fresh.build.codename")
 
 		if [ "${fresh4}" == "1" ]; then
-			if [ "${fresh_codename}" == "axl" ]; then
-				cp -rf $AK_FOLDER/files_fresh/system/etc/init/init.fresh.perf.rc /system/etc/init/init.fresh.perf.rc
-				chmod 644 /system_root/system/etc/init/init.fresh.perf.rc
-			fi
+			ui_print "    - Installing Fresh performance profile (Zest)..."
+			cp -rf $AK_FOLDER/files_fresh/system/etc/init/init.fresh.perf.rc /system/etc/init/init.fresh.perf.rc
+			cp -rf $AK_FOLDER/files_fresh/system/etc/init/init.fresh.perf.rc /system_root/system/etc/init/init.fresh.perf.rc
+			chmod 644 /system/etc/init/init.fresh.perf.rc
+			chmod 644 /system_root/system/etc/init/init.fresh.perf.rc
 		fi
 	fi
 else

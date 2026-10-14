@@ -1,3 +1,4 @@
+extern int sysctl_vfs_cache_pressure;
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * SOVR Kernel Boot Booster
@@ -130,6 +131,9 @@ void sovr_boot_boost_finish(void)
 
 	/* Restore balanced I/O read-ahead for runtime memory efficiency */
 	sovr_apply_read_ahead_kb(SOVR_RESTORE_READ_AHEAD_KB);
+
+	/* Pin VFS cache pressure to 75 to keep directory/inode caches in RAM */
+	sysctl_vfs_cache_pressure = 75;
 
 	pr_info("Boot completed: Acceleration DEACTIVATED cleanly. CPU governed dynamically, I/O set to %u KB ra.\n",
 		SOVR_RESTORE_READ_AHEAD_KB);
