@@ -26,7 +26,7 @@
 
 Transitioned from Samsung's legacy baseline to **OpenELA Enterprise Linux LTS (4.14.357)** and built with **Google AOSP Clang 17.0.2**, SOVR unlocks the full silicon potential of the SoC. It integrates kernel-level stealth via **SuSFS v1.5.5**, in-tree **KernelSU-Next v3.4.2**, backported **EROFS**, **Multi-Gen LRU (MGLRU)**, and low-latency networking.
 
-Tailored releases are provided for **Samsung One UI 4.1 (Android 12)**, **One UI 6+ (Android 14 / Fresh 6)**, and **Generic System Images (AOSP Android 12–14)**.
+Tailored releases are provided for **Samsung One UI 4.1 (Android 12)**, **One UI 6+ (Android 14 / Fresh 6)**, and **Generic System Images (AOSP Android 12+)**.
 
 ---
 
@@ -151,7 +151,7 @@ cd SOVR-Kernel-A50
 * **Linux Kernel Community & OpenELA:** For long-term maintenance of the Linux 4.14 enterprise kernel branch.
 * **Google AOSP Kernel Team:** For Clang/LLVM toolchain infrastructure and Multi-Gen LRU.
 * **Samsung Open Source Release Center (OSRC):** For base hardware source code and platform definitions.
-* **The Fresh Project (John Vincent / TenSeventy7 & Simon):** For Exynos 9610 platform research and ROM ecosystem support.
+* **The Fresh Project (John Vincent / TenSeventy7 & Louis Poier / PeterKnecht93):** For Exynos 9610 platform research and ROM ecosystem support.
 * **KernelSU Team (tiann) & KernelSU-Next (rifsxd):** For kernel-assisted superuser infrastructure.
 * **SuSFS Project (simonpunk):** For advanced kernel VFS stealth implementation.
 * **EROFS Community (Gao Xiang):** For the Enhanced Read-Only File System.
