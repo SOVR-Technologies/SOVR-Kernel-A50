@@ -34,6 +34,8 @@ extern int sysctl_vfs_cache_pressure;
 #define SOVR_DEFAULT_TIMEOUT_SECS     50
 #define SOVR_BOOT_CL0_FREQ           1534000 /* 1.53 GHz */
 #define SOVR_BOOT_CL1_FREQ           2184000 /* 2.18 GHz */
+#define SOVR_BOOT_MIF_FREQ           1352000 /* LPDDR4x Memory bus: 1.35 GHz */
+#define SOVR_BOOT_INT_FREQ            667000 /* Internal AXI/NoC Bus: 667 MHz */
 #define SOVR_BOOT_READ_AHEAD_KB      2048
 #define SOVR_RESTORE_READ_AHEAD_KB   512
 
@@ -44,6 +46,8 @@ static unsigned int current_read_ahead_kb = SOVR_BOOT_READ_AHEAD_KB;
 static struct pm_qos_request qos_cluster0;
 static struct pm_qos_request qos_cluster1;
 static struct pm_qos_request qos_cpu_online;
+static struct pm_qos_request qos_mif;
+static struct pm_qos_request qos_int;
 
 static DEFINE_MUTEX(booster_lock);
 static struct delayed_work booster_timeout_work;
@@ -95,6 +99,18 @@ static void sovr_boot_boost_start_locked(void)
 	else
 		pm_qos_update_request(&qos_cpu_online, 8);
 
+	/* Boost LPDDR4x Memory Bus to 1.35 GHz */
+	if (!pm_qos_request_active(&qos_mif))
+		pm_qos_add_request(&qos_mif, PM_QOS_BUS_THROUGHPUT, SOVR_BOOT_MIF_FREQ);
+	else
+		pm_qos_update_request(&qos_mif, SOVR_BOOT_MIF_FREQ);
+
+	/* Boost Internal Bus to 667 MHz */
+	if (!pm_qos_request_active(&qos_int))
+		pm_qos_add_request(&qos_int, PM_QOS_DEVICE_THROUGHPUT, SOVR_BOOT_INT_FREQ);
+	else
+		pm_qos_update_request(&qos_int, SOVR_BOOT_INT_FREQ);
+
 	/* Set I/O read-ahead to 2048 KB */
 	sovr_apply_read_ahead_kb(SOVR_BOOT_READ_AHEAD_KB);
 
@@ -102,8 +118,8 @@ static void sovr_boot_boost_start_locked(void)
 	schedule_delayed_work(&booster_timeout_work,
 			      msecs_to_jiffies(booster_timeout_secs * 1000));
 
-	pr_info("Boot acceleration ACTIVE: Cluster0>=%u kHz, Cluster1>=%u kHz, Cores=8, I/O=%u KB ra, Timeout=%us\n",
-		SOVR_BOOT_CL0_FREQ, SOVR_BOOT_CL1_FREQ, SOVR_BOOT_READ_AHEAD_KB, booster_timeout_secs);
+	pr_info("Boot acceleration ACTIVE: Cluster0>=%u kHz, Cluster1>=%u kHz, MIF>=%u kHz, INT>=%u kHz, Cores=8, I/O=%u KB ra, Timeout=%us\n",
+		SOVR_BOOT_CL0_FREQ, SOVR_BOOT_CL1_FREQ, SOVR_BOOT_MIF_FREQ, SOVR_BOOT_INT_FREQ, SOVR_BOOT_READ_AHEAD_KB, booster_timeout_secs);
 }
 
 void sovr_boot_boost_finish(void)
@@ -128,6 +144,12 @@ void sovr_boot_boost_finish(void)
 
 	if (pm_qos_request_active(&qos_cpu_online))
 		pm_qos_remove_request(&qos_cpu_online);
+
+	if (pm_qos_request_active(&qos_mif))
+		pm_qos_remove_request(&qos_mif);
+
+	if (pm_qos_request_active(&qos_int))
+		pm_qos_remove_request(&qos_int);
 
 	/* Restore balanced I/O read-ahead for runtime memory efficiency */
 	sovr_apply_read_ahead_kb(SOVR_RESTORE_READ_AHEAD_KB);

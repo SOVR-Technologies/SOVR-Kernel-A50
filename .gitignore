@@ -222,3 +222,5 @@ kernel/config_data.h
 # Build artifacts and analysis
 *.zip
 leap_analysis.json
+arch/arm64/crypto/sha256-core.S
+arch/arm64/crypto/sha512-core.S
