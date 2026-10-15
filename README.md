@@ -22,47 +22,47 @@
 
 ## Overview
 
-**SOVR Kernel** is an advanced, security-hardened, high-efficiency Linux kernel engineered specifically for the **Samsung Galaxy A50** (`SM-A505F/FN/G/N`, Exynos 9610). 
+**SOVR Kernel** is a high-performance, security-hardened Linux kernel engineered for the **Samsung Galaxy A50** (`SM-A505F/FN/G/N`, Exynos 9610).
 
-Developed through an incremental zero-blind-breakage roadmap, SOVR transitions Samsung's legacy 4.14 baseline to the latest **OpenELA Enterprise Linux LTS (4.14.357)**. Built with **Google AOSP Clang 17.0.2**, the kernel introduces deep silicon unlocking, full kernel-level stealth via **SuSFS v1.5.5**, in-tree **KernelSU-Next v3.4.2**, backported **EROFS**, multi-generational memory reclamation (**MGLRU**), and low-latency networking.
+Transitioned from Samsung's legacy baseline to **OpenELA Enterprise Linux LTS (4.14.357)** and built with **Google AOSP Clang 17.0.2**, SOVR unlocks the full silicon potential of the SoC. It integrates kernel-level stealth via **SuSFS v1.5.5**, in-tree **KernelSU-Next v3.4.2**, backported **EROFS**, **Multi-Gen LRU (MGLRU)**, and low-latency networking.
 
-SOVR is optimized for modern Android operating systems, providing specialized builds for **Samsung One UI 4.1 (Android 12)**, **One UI 6+ (Android 14 / Fresh 6)**, and **Generic System Images (AOSP Android 12–14)**.
+Tailored releases are provided for **Samsung One UI 4.1 (Android 12)**, **One UI 6+ (Android 14 / Fresh 6)**, and **Generic System Images (AOSP Android 12–14)**.
 
 ---
 
 ## Architectural Highlights
 
-### Silicon Unlock & Hardware Offloading
-* **ARMv8 Hardware Cryptography Extensions:** Unlocks dormant silicon execution units (`aes`, `pmull`, `sha1`, `sha2`, `crc32`, and `chacha20-neon`). Filesystem encryption (fscrypt / Android FBE), dm-crypt, and TLS packet hashing are executed directly in hardware rather than via software emulation.
-* **SCSC Wi-Fi Hardware Acceleration:** Activates NAPI ring-buffer polling, Generic Receive Offload (GRO), and Low Latency mode on the Samsung Connectivity Solutions Center (SCSC) subsystem, significantly lowering CPU interrupt overhead during high-bandwidth transfers.
-* **LPDDR4x & System Bus QoS Boost:** Custom boot booster enforces dynamic floors of 1.35 GHz on the LPDDR4x Memory Interface (MIF) and 667 MHz on the Internal Bus (INT) during boot and intensive launch phases.
-* **Cortex-A73 Pipeline Optimization:** Compiled with Clang 17 target flags `-march=armv8-a+crypto+crc+sha2+aes -mtune=cortex-a73 -mcpu=cortex-a73+crypto+crc+sha2+aes`, tuning instruction scheduling specifically for the out-of-order execution pipelines of the performance cluster.
+### ⚡ Silicon Unlock & Hardware Offloading
+* **ARMv8 Hardware Cryptography:** Unlocks hardware execution units (`aes`, `pmull`, `sha1`, `sha2`, `crc32`, and `chacha20-neon`). Android File-Based Encryption (fscrypt / FBE), dm-crypt, and TLS packet hashing execute directly on CPU silicon.
+* **SCSC Wi-Fi Acceleration:** Enables NAPI ring-buffer polling, Generic Receive Offload (GRO), and Low Latency mode on the SCSC Wi-Fi subsystem, minimizing CPU interrupt overhead during high-speed transfers.
+* **LPDDR4x & System Bus QoS Boost:** Enforces 1.35 GHz on the LPDDR4x Memory Interface (MIF) and 667 MHz on the Internal Bus (INT) during boot and intensive workload phases.
+* **Cortex-A73 Pipeline Optimization:** Built with `-march=armv8-a+crypto+crc+sha2+aes -mtune=cortex-a73 -mcpu=cortex-a73+crypto+crc+sha2+aes` for optimal instruction scheduling on out-of-order execution pipelines.
 
-### File Systems & Storage Architecture
-* **Native EROFS Backport:** Full in-kernel driver for the Enhanced Read-Only File System with ARMv8 NEON assembly decompression acceleration (`lz4armv8.S`), SELinux extended attributes, and POSIX ACL support for modern Android 13/14 system partitions.
-* **F2FS Modernization:** Rapid Garbage Collection, checkpointing reliability fixes, and reduced write amplification for flash longevity.
-* **Dynamic Fsync 2.0:** Suspends synchronous storage flushes while the screen is active and interactive, flushing pending transactions automatically upon screen suspend.
-* **Anxiety & Kyber I/O Elevators:** Optimized I/O schedulers tailored for UFS 2.1 flash storage responsiveness.
-* **Native OverlayFS:** In-tree module and overlay filesystem support.
+### 📁 File Systems & Storage Architecture
+* **Native EROFS Backport:** In-kernel Enhanced Read-Only File System with ARMv8 NEON assembly decompression (`lz4armv8.S`), SELinux xattrs, and POSIX ACL support for modern Android 13/14 system images.
+* **F2FS Modernization:** Rapid Garbage Collection, enhanced checkpointing, and reduced write amplification for flash endurance.
+* **Dynamic Fsync 2.0:** Suspends synchronous storage flushes while the screen is active, flushing deferred writes when the display sleeps.
+* **Anxiety & Kyber I/O Elevators:** Low-latency storage schedulers tuned for UFS 2.1 flash memory.
+* **Native OverlayFS:** In-tree support for systemless overlays and module mounts.
 
-### Kernel-Level Stealth & Enterprise Security
-* **SuSFS v1.5.5 Subsystem:** Kernel-level VFS isolation resolving modern detection vectors (including Native Detector Mount Gap 43 and Momo).
-* **Knox RKP Compatibility:** Adapted `struct mount` traversal logic for Samsung Real-time Kernel Protection (`CONFIG_RKP_NS_PROT`), avoiding kernel pointer panics.
-* **Per-UID SAR Partition Protection:** Safeguards physical mount points (`/vendor`, `/system`, `/product`) during per-UID unmount routines, preventing graphics HAL failures.
-* **SELinux Enforcing Compliance:** Designed and validated strictly for Enforcing mode, resolving recursive rwlock lockdep deadlocks.
-* **KernelSU-Next v3.4.2:** In-tree integration with manual hooks (`CONFIG_KSU_MANUAL_HOOK=y`), supporting UAPI v5, native module blacklists, and ADB-restricted shell root.
+### 🛡️ Kernel-Level Stealth & Enterprise Security
+* **SuSFS v1.5.5 Subsystem:** Kernel VFS stealth layer resolving modern detection vectors (including Native Detector Mount Gap 43 and Momo).
+* **Knox RKP Compatibility:** Adapted mount traversal for Samsung Real-time Kernel Protection (`CONFIG_RKP_NS_PROT`), preventing kernel panics.
+* **Per-UID SAR Partition Protection:** Preserves physical mount points (`/vendor`, `/system`, `/product`) during per-UID unmount routines, ensuring graphics HAL stability.
+* **SELinux Enforcing Mode:** Fully compliant with Android Enforcing policies, resolving recursive rwlock lockdep deadlocks.
+* **KernelSU-Next v3.4.2:** In-tree manual hooks (`CONFIG_KSU_MANUAL_HOOK=y`) supporting UAPI v5, native module blacklists, and ADB-only shell root.
 
-### Memory Management & Interactive Responsiveness
-* **Multi-Gen LRU (MGLRU):** Backported 12-patch series replacing the legacy 2-list LRU algorithm. Employs multi-generational page tracking (`/sys/kernel/mm/lru_gen/enabled`) to minimize memory thrashing and background app evictions.
-* **ZRAM with Zstandard (ZSTD):** Default multi-stream swap compression engine achieving an average ~3.87:1 compression ratio with sub-millisecond decompression overhead.
-* **Touch Event Frequency Boosting:** In-kernel touch floor setting 1.53 GHz on the Cortex-A73 cluster and 1.14 GHz on the Cortex-A53 cluster for 130 ms upon touch and multi-touch interactions.
-* **Energy Adaptive Governor Tuning:** Accelerated frequency ramp-up (`up_rate_limit_us`: 100 µs on BIG, 250 µs on LITTLE) and relaxed down-scaling (2000 µs) for stutter-free frame delivery.
-* **In-Kernel Boot Booster:** Locks performance clusters and sets block readahead to 2048 KB during early boot, automatically disengaging when `sys.boot_completed=1`.
+### 🧠 Memory Management & Interactive Responsiveness
+* **Multi-Gen LRU (MGLRU):** Backported 12-patch series replacing the legacy 2-list LRU algorithm. Employs multi-generational page tracking to cut memory thrashing and background app redraws.
+* **ZRAM with Zstandard (ZSTD):** Multi-stream swap compression engine achieving an average ~3.87:1 ratio with sub-millisecond decompression latency.
+* **Touch Event Frequency Boosting:** In-kernel touch floor setting 1.53 GHz (A73) and 1.14 GHz (A53) for 130 ms upon touch interactions for instant UI response.
+* **Accelerated Energy Adaptive Governor:** 100 µs (BIG) and 250 µs (LITTLE) ramp-up limits with 2000 µs down-scaling for smooth 60 FPS delivery.
+* **In-Kernel Boot Booster:** Locks clusters and raises block readahead to 2048 KB during early boot until `sys.boot_completed=1`.
 
-### Connectivity & Networking
-* **Google BBR:** Default TCP congestion control algorithm prioritizing bottleneck bandwidth and round-trip time.
-* **Bufferbloat Mitigation:** Integrated FQ-PIE and CAKE packet scheduling for Wi-Fi and mobile data networks.
-* **Multi-Ecosystem Adaptation:** Dual-mode stack with dedicated SCSC Samsung integration for One UI and upstream `wlan1` routing for pure AOSP GSIs.
+### 🌐 Connectivity & Networking
+* **Google BBR:** Default TCP congestion control algorithm prioritizing bottleneck bandwidth and minimal latency.
+* **Bufferbloat Mitigation:** Integrated FQ-PIE and CAKE queue disciplines for Wi-Fi and LTE.
+* **Multi-Ecosystem Adaptation:** Dual-interface SCSC networking for One UI and upstream `wlan1` routing for pure AOSP.
 
 ---
 
@@ -86,36 +86,20 @@ SOVR is optimized for modern Android operating systems, providing specialized bu
 
 ## Ecosystem Variants & Downloads
 
-Releases are available under [GitHub Releases](https://github.com/ruuiii-tk/SOVR-Kernel-A50/releases). Three specialized package variants are maintained:
+Releases are available under [GitHub Releases](https://github.com/ruuiii-tk/SOVR-Kernel-A50/releases):
 
 ```
 SOVR-Kernel-A50/
-├── One UI 4.1 (Android 12)
-│   ├── SOVR-Kernel-v4.0.A12_OneUI4_A50_KSU.zip      (KernelSU-Next + SuSFS)
-│   └── SOVR-Kernel-v4.0.A12_OneUI4_A50.zip          (Rootless / Magisk compatible)
-├── One UI 6+ (Android 14 / Fresh 6)
-│   ├── SOVR-Kernel-v4.0.A14_OneUI6_A50_KSU.zip      (Mali Bifrost R38P1 + KSU)
-│   └── SOVR-Kernel-v4.0.A14_OneUI6_A50.zip          (Mali Bifrost R38P1 Rootless)
-└── AOSP General (Android 12–14 GSIs)
-    ├── SOVR-Kernel-v4.0.A12_AOSP_A50_KSU.zip        (Pure wlan1 + ZRAM writeback + KSU)
-    └── SOVR-Kernel-v4.0.A12_AOSP_A50.zip            (Pure wlan1 Rootless)
+├── One UI 4.1
+│   ├── SOVR-Kernel-v4.0.A12_OneUI4_A50_KSU.zip
+│   └── SOVR-Kernel-v4.0.A12_OneUI4_A50.zip
+├── One UI 6+
+│   ├── SOVR-Kernel-v4.0.A14_OneUI6_A50_KSU.zip
+│   └── SOVR-Kernel-v4.0.A14_OneUI6_A50.zip
+└── AOSP General
+    ├── SOVR-Kernel-v4.0.A12_AOSP_A50_KSU.zip
+    └── SOVR-Kernel-v4.0.A12_AOSP_A50.zip
 ```
-
----
-
-## Version History & Milestones
-
-| Release | Linux Baseline | Core Innovations |
-| :--- | :--- | :--- |
-| **SOVR v1.0 – v1.3** | `4.14.194` | Initial LTS baseline, Google BBR, ZSTD ZRAM, MGLRU backport, Anxiety I/O. |
-| **SOVR v2.0 – v2.3** | `4.14.195 – 210` | 626 upstream files updated, Android RCU fixes, USB NCM tethering adaptation. |
-| **SOVR v2.4 – v2.9** | `4.14.211 – 280` | Memory management modernizations, arm64 core traps and futex LTS updates. |
-| **SOVR v3.0 – v3.2** | `4.14.336 – 357` | Final Linux 4.14 LTS merge, initial OpenELA integration, OverlayFS, Dynamic Fsync. |
-| **SOVR v3.8 – v3.9** | `4.14.357-openela` | Proactive compaction, watermark scaling, Kyber blk-mq, ptrace restriction. |
-| **SOVR v3.10 – v3.11** | `4.14.357-openela` | Resolved cpuset UCLAMP_ASSIST memory corruption; EMS CPU bounds hardening. |
-| **SOVR v3.12** | `4.14.357-openela` | Google AOSP Clang 17.0.2 toolchain integration with LLD `--apply-dynamic-relocs`. |
-| **SOVR v3.13** | `4.14.357-openela` | SuSFS v1.5.5, Knox RKP pointer compatibility, SELinux recursive rwlock deadlock fix. |
-| **SOVR v4.0** | `4.14.357-openela` | **Silicon Unlock:** ARMv8 Crypto Extensions, SCSC Wi-Fi NAPI/GRO offload, Cortex-A73 pipeline tuning, EROFS native backport, In-kernel Boot Booster, Touch Booster, KernelSU-Next v3.4.2, and Triple Ecosystem matrix (One UI 4, One UI 6+, AOSP). |
 
 ---
 
@@ -127,12 +111,12 @@ SOVR-Kernel-A50/
 
 ### Flashing Procedure
 1. Download the flashable ZIP matching your ROM and root preference from [GitHub Releases](https://github.com/ruuiii-tk/SOVR-Kernel-A50/releases).
-2. Transfer the ZIP package to internal storage or an external MicroSD card.
+2. Transfer the ZIP to device storage or MicroSD card.
 3. Reboot the device into **Recovery mode**.
-4. In recovery, navigate to **Install**, select the SOVR Kernel ZIP package, and swipe to confirm flash.
+4. In recovery, select **Install**, choose the SOVR Kernel ZIP, and swipe to flash.
 5. (Recommended) Wipe Dalvik / ART Cache.
 6. Reboot to **System**.
-7. For KSU builds, install the latest **KernelSU-Next Manager APK** to configure superuser privileges and SuSFS stealth modules.
+7. For KSU builds, install the latest **KernelSU-Next Manager APK** to configure root permissions and SuSFS modules.
 
 ---
 
