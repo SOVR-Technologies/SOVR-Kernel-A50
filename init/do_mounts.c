@@ -398,6 +398,7 @@ retry:
 				goto out;
 			case -EACCES:
 			case -EINVAL:
+			case -EUCLEAN:
 				continue;
 		}
 	        /*

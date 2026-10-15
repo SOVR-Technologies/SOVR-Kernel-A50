@@ -298,6 +298,9 @@ do_versioncheck() {
   [ "$(file_getprop mint.prop ro.mint.droid.platform)" ] || return 1;
   local android_ver hi_ver lo_ver parsed_ver supported supported_ver;
   ui_print "  - Checking Android version...";
+  mount /system 2>/dev/null;
+  mount /system_root 2>/dev/null;
+  mount /vendor 2>/dev/null;
   supported_ver=$(file_getprop mint.prop ro.mint.droid.platform | $BB tr -d '[:space:]');
   android_ver=$(file_getprop /system_root/system/build.prop ro.build.version.release);
   [ -z "$android_ver" ] && android_ver=$(file_getprop /system/build.prop ro.build.version.release);
@@ -330,6 +333,9 @@ do_variantcheck() {
   [ "$(file_getprop mint.prop ro.mint.droid.variant)" ] || return 1;
   local oneui platform kernel_platform supported;
   ui_print "  - Checking kernel variant...";
+  mount /system 2>/dev/null;
+  mount /system_root 2>/dev/null;
+  mount /vendor 2>/dev/null;
   oneui=$(file_getprop "/system_root/system/build.prop" "ro.build.PDA");
   kernel_platform=$(file_getprop mint.prop ro.mint.droid.variant | $BB tr 'A-Z' 'a-z');
 
