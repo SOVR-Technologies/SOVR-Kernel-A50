@@ -299,7 +299,10 @@ do_versioncheck() {
   local android_ver hi_ver lo_ver parsed_ver supported supported_ver;
   ui_print "  - Checking Android version...";
   supported_ver=$(file_getprop mint.prop ro.mint.droid.platform | $BB tr -d '[:space:]');
-  android_ver=$(file_getprop /vendor/build.prop ro.vendor.build.version.release);
+  android_ver=$(file_getprop /system_root/system/build.prop ro.build.version.release);
+  [ -z "$android_ver" ] && android_ver=$(file_getprop /system/build.prop ro.build.version.release);
+  [ -z "$android_ver" ] && android_ver=$(file_getprop /vendor/build.prop ro.vendor.build.version.release);
+  [ -z "$android_ver" ] && android_ver=$(file_getprop /vendor/build.prop ro.build.version.release);
   parsed_ver=$(int2ver $android_ver);
   if echo $supported_ver | $BB grep -q '-'; then
     lo_ver=$(int2ver "$(echo $supported_ver | $BB cut -d- -f1)");
@@ -356,7 +359,10 @@ do_levelcheck() {
   local android_lvl hi_lvl lo_lvl parsed_lvl supported_lvl;
   ui_print "  - Checking Android security patch level...";
   supported_lvl=$(file_getprop mint.sh supported.patchlevels | $BB grep -oE '[0-9]{4}-[0-9]{2}|-');
-  android_lvl=$(file_getprop /system/build.prop ro.build.version.security_patch);
+  android_lvl=$(file_getprop /system_root/system/build.prop ro.build.version.security_patch);
+  [ -z "$android_lvl" ] && android_lvl=$(file_getprop /system/build.prop ro.build.version.security_patch);
+  [ -z "$android_lvl" ] && android_lvl=$(file_getprop /vendor/build.prop ro.vendor.build.security_patch);
+  [ -z "$android_lvl" ] && android_lvl=$(file_getprop /vendor/build.prop ro.build.version.security_patch);
   parsed_lvl=$(echo $android_lvl | $BB grep -oE '[0-9]{4}-[0-9]{2}');
   if echo $supported_lvl | $BB grep -q '^\-'; then
     lo_lvl=0000-00;

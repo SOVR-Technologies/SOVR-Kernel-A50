@@ -38,7 +38,9 @@ mount -o rw,remount -t auto /vendor > /dev/null
 
 fresh4=0
 fresh=$(file_getprop "/system_root/system/system_ext/fresh.prop" "ro.fresh.maintainer")
+[ -z "$fresh" ] && fresh=$(file_getprop "/system/system_ext/fresh.prop" "ro.fresh.maintainer")
 oneui=$(file_getprop "/system_root/system/build.prop" "ro.build.PDA")
+[ -z "$oneui" ] && oneui=$(file_getprop "/system/build.prop" "ro.build.PDA")
 
 # Accomodate Exynos9611 devices' init.hardware.rc
 if [ -f "/vendor/etc/init/init.exynos9611.rc" ]; then
@@ -56,8 +58,10 @@ if [ -z $fresh ]; then
 fi
 
 if [ ! -z "$oneui" ] || [ ! -z "$fresh" ]; then
-	sdk_ver=$(file_getprop /vendor/build.prop ro.vendor.build.version.sdk);
-	[ -z "$sdk_ver" ] && sdk_ver=$(file_getprop /system_root/system/build.prop ro.build.version.sdk);
+	sdk_ver=$(file_getprop /system_root/system/build.prop ro.build.version.sdk);
+	[ -z "$sdk_ver" ] && sdk_ver=$(file_getprop /system/build.prop ro.build.version.sdk);
+	[ -z "$sdk_ver" ] && sdk_ver=$(file_getprop /vendor/build.prop ro.vendor.build.version.sdk);
+	[ -z "$sdk_ver" ] && sdk_ver=$(file_getprop /vendor/build.prop ro.build.version.sdk);
 
 	if [ "${sdk_ver}" == "30" ]; then
 		ui_print "  - One UI 3 detected!"
