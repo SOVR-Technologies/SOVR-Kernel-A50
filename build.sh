@@ -709,6 +709,9 @@ fi
 if [[ ${BUILD_KERNEL_CODE} == "aosp" ]]; then
 	script_echo "I: Copying no-product DTB file for use with AOSP ROMs."
 	cp -f $(pwd)/arch/arm64/boot/dts/exynos/aosp/exynos9610.dts $(pwd)/arch/arm64/boot/dts/exynos/
+elif [[ ${BUILD_ANDROID_PLATFORM} -ge 14 ]] && [[ ${BUILD_KERNEL_CODE} == "oneui" ]]; then
+	script_echo "I: Copying One UI 14 EROFS DTB file for use with Fresh 6 / One UI 6."
+	cp -f $(pwd)/arch/arm64/boot/dts/exynos/oneui14/exynos9610.dts $(pwd)/arch/arm64/boot/dts/exynos/
 fi
 
 set_android_version
@@ -721,8 +724,8 @@ else
 	build_package
 fi
 
-# Restore default One UI DTB if AOSP was built
-if [[ ${BUILD_KERNEL_CODE} == "aosp" ]]; then
+# Restore default One UI DTB if AOSP or OneUI 14 was built
+if [[ ${BUILD_KERNEL_CODE} == "aosp" ]] || [[ ${BUILD_ANDROID_PLATFORM} -ge 14 ]]; then
 	git checkout arch/arm64/boot/dts/exynos/exynos9610.dts 2>/dev/null || true
 fi
 
