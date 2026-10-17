@@ -2009,4 +2009,6 @@ static inline int xfrm_tunnel_check(struct sk_buff *skb, struct xfrm_state *x,
 
 	return 0;
 }
+struct dst_entry *xfrm_lookup_with_ifid(struct net *net, struct dst_entry *dst_orig, const struct flowi *fl, const struct sock *sk, int flags, u32 if_id);
+
 #endif	/* _NET_XFRM_H */

@@ -928,4 +928,14 @@ enum {
 	IFLA_EVENT_BONDING_OPTIONS,	/* change in bonding options */
 };
 
+/* XFRM section */
+enum {
+	IFLA_XFRM_UNSPEC,
+	IFLA_XFRM_LINK,
+	IFLA_XFRM_IF_ID,
+	__IFLA_XFRM_MAX,
+};
+
+#define IFLA_XFRM_MAX (__IFLA_XFRM_MAX - 1)
+
 #endif /* _UAPI_LINUX_IF_LINK_H */
