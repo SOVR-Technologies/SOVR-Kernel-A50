@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://github.com/openela/kernel-lts"><img src="https://img.shields.io/badge/Linux-4.14.357--openela_+_ELTS-1f2328.svg?logo=linux" alt="Linux Kernel"></a>
-  <a href="https://github.com/SOVR-Technologies/SOVR-Kernel-A50/releases/tag/v4.1"><img src="https://img.shields.io/badge/Release-SOVR_v4.1_Final-0969da.svg?logo=github" alt="Release"></a>
+  <a href="https://github.com/SOVR-Technologies/SOVR-Kernel-A50/releases"><img src="https://img.shields.io/badge/Release-SOVR_v4.1_Final_(Testing)-0969da.svg?logo=github" alt="Release"></a>
   <a href="https://semiconductor.samsung.com"><img src="https://img.shields.io/badge/SoC-Exynos_9610-1f2328.svg" alt="Target SoC"></a>
   <a href="https://github.com/Neutron-Toolchains/clang-build-catalogue"><img src="https://img.shields.io/badge/Compiler-Neutron_Clang_24.0.0git_(LLVM_24)-1f2328.svg" alt="Compiler"></a>
   <a href="https://github.com/KernelSU-Next/KernelSU-Next"><img src="https://img.shields.io/badge/Root-KernelSU--Next_v3.4.2-1f2328.svg" alt="Root"></a>
@@ -18,6 +18,17 @@
   <img src="https://img.shields.io/badge/TCP-Google_BBR-1f2328.svg" alt="TCP BBR">
   <img src="https://img.shields.io/badge/VINTF-FCM_Compliant_(0_errors)-0969da.svg" alt="VINTF">
 </p>
+
+---
+
+> [!IMPORTANT]
+> ### 📢 Release Status & Testers Announcement
+> * **1000% Tested Release Philosophy:** Official v4.1 Final release ZIPs will be made publicly available under [GitHub Releases](https://github.com/SOVR-Technologies/SOVR-Kernel-A50/releases) once they undergo exhaustive battery, thermal, and multitasking validation across all target ROMs to guarantee 1000% rock-solid daily stability.
+> * **Community Testers Needed Soon:** We will soon be opening public testing rings for:
+>   * 🚀 **AOSP & GSIs:** Pure Android 12, 13, 14, and 15 custom ROMs and Generic System Images.
+>   * 🔮 **One UI 8.5:** Experimental next-generation One UI ports tailored for the Exynos 9610 platform.
+>
+> If you want to help test early builds and provide kernel logs/feedback, join our discussions on [GitHub Issues](https://github.com/SOVR-Technologies/SOVR-Kernel-A50/issues) and [XDA Forums](https://xdaforums.com/t/kernel-a505-4-14-357-sovr-kernel-v4-0-oneui-4-1-6-1-tested-a11-a16-anykernel3-ksu-next.4803872/)!
 
 ---
 
@@ -89,7 +100,7 @@ Starting with **v4.1 Final**, SOVR introduces **Dynamic Universal AnyKernel3 Ins
 
 ## Ecosystem Variants & Downloads
 
-Releases are available under [GitHub Releases](https://github.com/SOVR-Technologies/SOVR-Kernel-A50/releases):
+Releases will be published under [GitHub Releases](https://github.com/SOVR-Technologies/SOVR-Kernel-A50/releases) once 1000% validation completes:
 
 ### Universal Installers (v4.1 Final)
 * **`SOVR-Kernel-v4.1.OneUI_Universal_A50_KSU.zip`**
@@ -99,6 +110,10 @@ Releases are available under [GitHub Releases](https://github.com/SOVR-Technolog
     * **One UI 3.1** (Android 11 / Stock Samsung)
 * **`SOVR-Kernel-v4.1.AOSP_Universal_A50_KSU.zip`**
   * Tailored for **Generic System Images (GSIs)** and AOSP Android 12+ (LineageOS, Pixel Experience, CrDroid) with legacy DTB, dual MAC fallback, and BPF 5.4.186 compatibility.
+
+### 🧪 Upcoming Test Rings (Testers Needed)
+* **AOSP / GSI Matrix Ring:** Dedicated testing ring for pure AOSP builds, custom device trees, and bleeding-edge GSIs.
+* **One UI 8.5 Port Ring:** Testing ring for prospective next-generation One UI ports on the Galaxy A50.
 
 ---
 
