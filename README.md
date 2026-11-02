@@ -77,7 +77,7 @@ Starting with **v4.1 Final**, SOVR introduces **Dynamic Universal AnyKernel3 Ins
 * **Decoupled Devfreq Bus Scaling:** Removed hardcoded CPU0 thread and timer affinity (`BOUND_CPU_NUM=0`) in `governor_simpleinteractive.c`, allowing memory bus frequency scaling to execute across any available CPU core without stalling during app launches.
 * **Asynchronous TrustZone/TZDEV Init:** Converted `startup.tzar` deployment to non-blocking asynchronous execution, eliminating race conditions and SCSI RPMB deadlocks on boot.
 * **VINTF Framework Compliance:** Fully satisfies Android Framework Compatibility Matrix (FCM) requirements (`CONFIG_AUDIT=y`, `CONFIG_SCHED_DEBUG=y`, `CONFIG_USB_RTL8152=y`), eliminating Samsung system error popups and achieving **0 checkvintf errors**.
-* **Modern BPF Loader Fake Uname:** Integrated `netbpfload` uname spoofing to `5.4.186`, ensuring seamless boot compatibility with modern Android 14 and Android 15 GSIs.
+* **BPF Subsystem Stability:** Clean, native BPF loader execution without artificial uname spoofing, ensuring flawless `NetBpfLoad` initialization across Android 14+ without BTF mismatch crashes.
 
 ---
 
