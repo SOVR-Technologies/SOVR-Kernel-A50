@@ -388,15 +388,25 @@ if [[ ! -z ${BUILD_KERNEL_BRANCH} ]]; then
 	fi
 else
 	SOVR_VERSION="v4.1"
-	if [[ ${BUILD_KERNEL_KSU} == 'true' ]]; then
-		FILE_OUTPUT=SOVR-Kernel-${SOVR_VERSION}.A${BUILD_ANDROID_PLATFORM}_${FILE_KERNEL_CODE}${ZIP_ONEUI_VERSION}_${BUILD_DEVICE_NAME^}_KSU.zip
-		LOCALVERSION=" OpenELA + ELTS - SOVR 4.1 KSU"
-	elif [[ ${BUILD_KERNEL_MAGISK} == 'true' ]]; then
-		FILE_OUTPUT=SOVR-Kernel-${SOVR_VERSION}.A${BUILD_ANDROID_PLATFORM}_${FILE_KERNEL_CODE}${ZIP_ONEUI_VERSION}_${BUILD_DEVICE_NAME^}_Magisk.zip
-		LOCALVERSION=" OpenELA + ELTS - SOVR 4.1 Magisk"
+	if [[ ${BUILD_KERNEL_CODE} == "oneui" && ${BUILD_ANDROID_PLATFORM} == 14 ]]; then
+		SOVR_BETA_TAG=""
+		SOVR_BETA_LOCAL=""
+		SOVR_IS_BETA="false"
 	else
-		FILE_OUTPUT=SOVR-Kernel-${SOVR_VERSION}.A${BUILD_ANDROID_PLATFORM}_${FILE_KERNEL_CODE}${ZIP_ONEUI_VERSION}_${BUILD_DEVICE_NAME^}.zip
-		LOCALVERSION=" OpenELA + ELTS - SOVR 4.1 Non-KSU"
+		SOVR_BETA_TAG="-BETA"
+		SOVR_BETA_LOCAL="-BETA"
+		SOVR_IS_BETA="true"
+	fi
+
+	if [[ ${BUILD_KERNEL_KSU} == 'true' ]]; then
+		FILE_OUTPUT=SOVR-Kernel-${SOVR_VERSION}${SOVR_BETA_TAG}.A${BUILD_ANDROID_PLATFORM}_${FILE_KERNEL_CODE}${ZIP_ONEUI_VERSION}_${BUILD_DEVICE_NAME^}_KSU.zip
+		LOCALVERSION=" OpenELA + ELTS - SOVR 4.1${SOVR_BETA_LOCAL} KSU"
+	elif [[ ${BUILD_KERNEL_MAGISK} == 'true' ]]; then
+		FILE_OUTPUT=SOVR-Kernel-${SOVR_VERSION}${SOVR_BETA_TAG}.A${BUILD_ANDROID_PLATFORM}_${FILE_KERNEL_CODE}${ZIP_ONEUI_VERSION}_${BUILD_DEVICE_NAME^}_Magisk.zip
+		LOCALVERSION=" OpenELA + ELTS - SOVR 4.1${SOVR_BETA_LOCAL} Magisk"
+	else
+		FILE_OUTPUT=SOVR-Kernel-${SOVR_VERSION}${SOVR_BETA_TAG}.A${BUILD_ANDROID_PLATFORM}_${FILE_KERNEL_CODE}${ZIP_ONEUI_VERSION}_${BUILD_DEVICE_NAME^}.zip
+		LOCALVERSION=" OpenELA + ELTS - SOVR 4.1${SOVR_BETA_LOCAL} Non-KSU"
 	fi
 
 	BUILD_KERNEL_BRANCH='sovr'
@@ -426,8 +436,8 @@ build_package() {
 		echo "ro.mint.droid.beta=false" >> $(pwd)/tools/make/package/mint.prop
 		echo "ro.mint.build.version=${KERNEL_BUILD_VERSION}" >> $(pwd)/tools/make/package/mint.prop
 	elif [[ ${BUILD_KERNEL_BRANCH} == "sovr" ]]; then
-		echo "ro.mint.droid.beta=false" >> $(pwd)/tools/make/package/mint.prop
-		echo "ro.mint.build.version=${SOVR_VERSION:-v4.0}" >> $(pwd)/tools/make/package/mint.prop
+		echo "ro.mint.droid.beta=${SOVR_IS_BETA:-false}" >> $(pwd)/tools/make/package/mint.prop
+		echo "ro.mint.build.version=${SOVR_VERSION:-v4.1}${SOVR_BETA_TAG}" >> $(pwd)/tools/make/package/mint.prop
 	else
 		echo "ro.mint.droid.beta=true" >> $(pwd)/tools/make/package/mint.prop
 		echo "ro.mint.build.version=${GITHUB_RUN_NUMBER}" >> $(pwd)/tools/make/package/mint.prop

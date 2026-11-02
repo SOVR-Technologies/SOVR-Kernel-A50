@@ -22,13 +22,15 @@
 ---
 
 > [!IMPORTANT]
-> ### 📢 Release Status & Testers Announcement
-> * **1000% Tested Release Philosophy:** Official v4.1 Final release ZIPs will be made publicly available under [GitHub Releases](https://github.com/SOVR-Technologies/SOVR-Kernel-A50/releases) once they undergo exhaustive battery, thermal, and multitasking validation across all target ROMs to guarantee 1000% rock-solid daily stability.
-> * **Community Testers Needed Soon:** We will soon be opening public testing rings for:
->   * 🚀 **AOSP & GSIs:** Pure Android 12, 13, 14, and 15 custom ROMs and Generic System Images.
->   * 🔮 **One UI 8.5:** Experimental next-generation One UI ports tailored for the Exynos 9610 platform.
+> ### 📢 Release Status & Community Testing Rings (v4.1 Final)
+> * **One UI 6+ (Android 14) — 1000% Verified Stable:** The One UI 6 release packages (`SOVR-Kernel-v4.1.A14_OneUI6_A50_KSU.zip` and non-root) have undergone comprehensive physical hardware validation on real Galaxy A50 devices and are verified for rock-solid daily driver stability with zero panics, full NetBpfLoad compliance, and low thermal footprint.
+> * **One UI 4, One UI 3 & AOSP — Community BETA:** Builds outside of One UI 6 are designated with the `-BETA` suffix (`SOVR-Kernel-v4.1-BETA...`) as community testing candidates. Initial boot stability is not 100% guaranteed across every sub-variant until reported by community testers. Once stability is validated, these ZIP packages will be updated directly within this v4.1 release, dropping the `-BETA` tag.
+> * **Community Testers Needed:** Help test and report feedback for:
+>   * 🚀 **AOSP & GSIs:** Android 12, 13, 14, and 15 custom ROMs and Generic System Images.
+>   * 🔮 **Legacy One UI:** One UI 3.1 (Android 11) and One UI 4.1 / 5 (Android 12/13).
+>   * 🌌 **Next-Gen Ports:** Upcoming One UI 8.5 experimental ports.
 >
-> If you want to help test early builds and provide kernel logs/feedback, join our discussions on [GitHub Issues](https://github.com/SOVR-Technologies/SOVR-Kernel-A50/issues) and [XDA Forums](https://xdaforums.com/t/kernel-a505-4-14-357-sovr-kernel-v4-0-oneui-4-1-6-1-tested-a11-a16-anykernel3-ksu-next.4803872/)!
+> Report test results and share logs on [GitHub Issues](https://github.com/SOVR-Technologies/SOVR-Kernel-A50/issues) or [XDA Forums](https://xdaforums.com/t/kernel-a505-4-14-357-sovr-kernel-v4-0-oneui-4-1-6-1-tested-a11-a16-anykernel3-ksu-next.4803872/)!
 
 ---
 
