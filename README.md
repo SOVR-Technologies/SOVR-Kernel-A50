@@ -105,12 +105,12 @@ Starting with **v4.1 Final**, SOVR introduces **Dynamic Universal AnyKernel3 Ins
 Releases will be published under [GitHub Releases](https://github.com/SOVR-Technologies/SOVR-Kernel-A50/releases) once 1000% validation completes:
 
 ### Universal Installers (v4.1 Final)
-* **`SOVR-Kernel-v4.1.OneUI_Universal_A50_KSU.zip`**
+* **`SOVR-Kernel-v4.1.OneUI_A50_KSU.zip`**
   * Automatically detects and injects the verified kernel and DTB for:
     * **One UI 6.x** (Android 14 / Fresh 6)
     * **One UI 4.x & 5.x** (Android 12/13 / Fresh 4/5)
     * **One UI 3.1** (Android 11 / Stock Samsung)
-* **`SOVR-Kernel-v4.1.AOSP_Universal_A50_KSU.zip`**
+* **`SOVR-Kernel-v4.1.AOSP_A50_KSU.zip`**
   * Tailored for **Generic System Images (GSIs)** and AOSP Android 12+ (LineageOS, Pixel Experience, CrDroid) with legacy DTB, dual MAC fallback, and BPF 5.4.186 compatibility.
 
 ### 🧪 Upcoming Test Rings (Testers Needed)
