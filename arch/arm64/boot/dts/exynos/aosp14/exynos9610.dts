@@ -165,7 +165,7 @@
 				vendor {
 					compatible = "android,vendor";
 					dev = "/dev/block/platform/13520000.ufs/by-name/vendor";
-					type = "erofs";
+					type = "ext4";
 					mnt_flags = "ro";
 					fsmgr_flags = "wait";
 					status = "okay";

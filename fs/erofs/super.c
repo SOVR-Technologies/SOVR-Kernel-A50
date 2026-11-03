@@ -292,8 +292,8 @@ static int erofs_parse_options(struct super_block *sb, char *options)
 				return err;
 			break;
 		default:
-			erofs_err(sb, "Unrecognized mount option \"%s\" or missing value", p);
-			return -EINVAL;
+			erofs_info(sb, "Unrecognized mount option \"%s\" or missing value, ignoring", p);
+			break;
 		}
 	}
 	return 0;
