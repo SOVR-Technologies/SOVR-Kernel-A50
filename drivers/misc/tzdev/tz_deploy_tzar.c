@@ -78,37 +78,33 @@ static __ref int tz_deploy_handler(void *arg)
 	reg_size = DIV_ROUND_UP(tzar_size, PAGE_SIZE) * PAGE_SIZE;
 	pr_info("tzdev: deploying startup.tzar (size=%zu, reg_size=%zu)\n", tzar_size, reg_size);
 
+	tzar = vzalloc(reg_size);
+	if (!tzar) {
+		pr_err("tzdev: vzalloc fail\n");
+		return -ENOMEM;
+	}
+
+	/* Copy once upfront while .init.data is guaranteed to still be mapped */
+	memcpy(tzar, tzdev_tzar_begin, tzar_size);
+
+	ret = tzdev_mem_register(tzar, reg_size, 0, NULL, NULL);
+	if (ret < 0) {
+		pr_err("tzdev: tzdev_mem_register fail, ret=%d\n", ret);
+		vfree(tzar);
+		return ret;
+	}
+
+	memset(&command, 0, sizeof(command));
+	command.base.cmd = CMD_STARTUP_LOADER_UPLOAD_CONTAINER;
+	command.buf_desc.id = (uint32_t)ret;
+	command.buf_desc.offset = 0;
+	command.buf_desc.size = (uint32_t)reg_size;
+
 	for (retry_cnt = 0; retry_cnt < MAX_LOADING_ATTEMPTS; retry_cnt++) {
-		tzar = vzalloc(reg_size);
-		if (!tzar) {
-			pr_err("tzdev: vzalloc fail\n");
-			ret = -ENOMEM;
-			msleep(200);
-			continue;
-		}
-
-		memcpy(tzar, tzdev_tzar_begin, tzar_size);
-
-		ret = tzdev_mem_register(tzar, reg_size, 0, NULL, NULL);
-		if (ret < 0) {
-			pr_err("tzdev: tzdev_mem_register fail, ret=%d\n", ret);
-			vfree(tzar);
-			msleep(200);
-			continue;
-		}
-
-		memset(&command, 0, sizeof(command));
-		command.base.cmd = CMD_STARTUP_LOADER_UPLOAD_CONTAINER;
-		command.buf_desc.id = (uint32_t)ret;
-		command.buf_desc.offset = 0;
-		command.buf_desc.size = (uint32_t)reg_size;
-
 		sd = tz_iwsock_socket(1);
 		if (IS_ERR(sd)) {
 			ret = PTR_ERR(sd);
 			pr_err("tzdev: tz_iwsock_socket fail, ret=%d\n", ret);
-			tzdev_mem_release(command.buf_desc.id);
-			vfree(tzar);
 			msleep(200);
 			continue;
 		}
@@ -124,21 +120,38 @@ static __ref int tz_deploy_handler(void *arg)
 		}
 		if (ret < 0) {
 			pr_err("tzdev: tz_iwsock_connect fail, ret=%d\n", ret);
-			goto out_sock;
+			tz_iwsock_release(sd);
+			msleep(200);
+			continue;
 		}
 
 		ret = tz_iwsock_write(sd, &command, sizeof(command), 0);
 		if (ret != sizeof(command)) {
 			pr_err("tzdev: tz_iwsock_write fail, ret=%d\n", ret);
-			goto out_sock;
+			tz_iwsock_release(sd);
+			msleep(200);
+			continue;
 		}
 
 		memset(&reply, 0, sizeof(reply));
 		ret = tz_iwsock_read(sd, &reply, sizeof(reply), 0);
-		if (ret < 0 || reply.base.result != 0) {
-			pr_err("tzdev: startup_loader upload failed (attempt %d/%d): read_ret=%d, result=%u\n",
-				retry_cnt + 1, MAX_LOADING_ATTEMPTS, ret, reply.base.result);
-			goto out_sock;
+		if (ret < 0) {
+			pr_err("tzdev: startup_loader upload failed (attempt %d/%d): read_ret=%d\n",
+				retry_cnt + 1, MAX_LOADING_ATTEMPTS, ret);
+			tz_iwsock_release(sd);
+			msleep(200);
+			continue;
+		}
+
+		if (reply.base.result != 0) {
+			/* Result 22 (EINVAL) or other non-zero result means TEEGRIS already has container
+			 * or explicitly rejected it. Skip gracefully without futile retries! */
+			pr_info("tzdev: startup.tzar deploy rejected/already loaded (result=%u), skipping safely\n",
+				reply.base.result);
+			tz_iwsock_release(sd);
+			tzar_deploy_result = 0;
+			ret = 0;
+			break;
 		}
 
 		if (reply.base.base.cmd != CMD_STARTUP_LOADER_REPLY_UPLOAD_CONTAINER) {
@@ -147,18 +160,13 @@ static __ref int tz_deploy_handler(void *arg)
 
 		pr_info("tzdev: [debug] Startuploader complete successfully!\n");
 		tz_iwsock_release(sd);
-		tzdev_mem_release(command.buf_desc.id);
-		vfree(tzar);
 		tzar_deploy_result = 0;
 		ret = 0;
 		break;
-
-out_sock:
-		tz_iwsock_release(sd);
-		tzdev_mem_release(command.buf_desc.id);
-		vfree(tzar);
-		msleep(200);
 	}
+
+	tzdev_mem_release(command.buf_desc.id);
+	vfree(tzar);
 
 	if (tzar_deploy_result != 0) {
 		pr_err("tzdev: Failed to deploy startup.tzar after %d attempts!\n", MAX_LOADING_ATTEMPTS);
