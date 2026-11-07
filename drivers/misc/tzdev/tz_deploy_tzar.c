@@ -31,8 +31,10 @@
 #define MAX_CONNECTION_ATTEMPTS 20
 #define CONNECTION_ATTEMPT_TIMEOUT 100
 
+/* Put tzar blobs into .rodata so they remain permanently mapped in memory
+ * and are never affected by .init.data reclaim (avoiding use-after-free). */
 __asm__ (
-  ".section .init.data,\"aw\"\n"
+  ".section .rodata,\"a\"\n"
   ".globl tzdev_tzar_begin\n"
   "tzdev_tzar_begin:\n"
   ".incbin \"drivers/misc/tzdev/startup.tzar\"\n"
@@ -41,6 +43,17 @@ __asm__ (
   ".previous\n"
 );
 extern char tzdev_tzar_begin[], tzdev_tzar_end[];
+
+__asm__ (
+  ".section .rodata,\"a\"\n"
+  ".globl tzdev_old_tzar_begin\n"
+  "tzdev_old_tzar_begin:\n"
+  ".incbin \"drivers/misc/tzdev/startup_old.tzar\"\n"
+  ".globl tzdev_old_tzar_end\n"
+  "tzdev_old_tzar_end:\n"
+  ".previous\n"
+);
+extern char tzdev_old_tzar_begin[], tzdev_old_tzar_end[];
 
 enum iw_startup_loader_cmd_type {
 	CMD_STARTUP_LOADER_INVALID_ID,
@@ -61,35 +74,31 @@ struct cmd_startup_loader_reply_upload_container {
 
 static int tzar_deploy_result = -1;
 
-static __ref int tz_deploy_handler(void *arg)
+static int upload_tzar_buffer(const void *src, size_t src_size, const char *name)
 {
 	int ret = -1;
 	int retry_cnt;
-	size_t tzar_size;
 	size_t reg_size;
 	struct sock_desc *sd;
 	struct cmd_startup_loader_upload_container command;
 	struct cmd_startup_loader_reply_upload_container reply;
 	void *tzar;
 	unsigned int attempt;
-	(void)arg;
 
-	tzar_size = tzdev_tzar_end - tzdev_tzar_begin;
-	reg_size = DIV_ROUND_UP(tzar_size, PAGE_SIZE) * PAGE_SIZE;
-	pr_info("tzdev: deploying startup.tzar (size=%zu, reg_size=%zu)\n", tzar_size, reg_size);
+	reg_size = DIV_ROUND_UP(src_size, PAGE_SIZE) * PAGE_SIZE;
+	pr_info("tzdev: deploying %s (size=%zu, reg_size=%zu)\n", name, src_size, reg_size);
 
 	tzar = vzalloc(reg_size);
 	if (!tzar) {
-		pr_err("tzdev: vzalloc fail\n");
+		pr_err("tzdev: vzalloc fail for %s\n", name);
 		return -ENOMEM;
 	}
 
-	/* Copy once upfront while .init.data is guaranteed to still be mapped */
-	memcpy(tzar, tzdev_tzar_begin, tzar_size);
+	memcpy(tzar, src, src_size);
 
 	ret = tzdev_mem_register(tzar, reg_size, 0, NULL, NULL);
 	if (ret < 0) {
-		pr_err("tzdev: tzdev_mem_register fail, ret=%d\n", ret);
+		pr_err("tzdev: tzdev_mem_register fail for %s, ret=%d\n", name, ret);
 		vfree(tzar);
 		return ret;
 	}
@@ -104,7 +113,7 @@ static __ref int tz_deploy_handler(void *arg)
 		sd = tz_iwsock_socket(1);
 		if (IS_ERR(sd)) {
 			ret = PTR_ERR(sd);
-			pr_err("tzdev: tz_iwsock_socket fail, ret=%d\n", ret);
+			pr_err("tzdev: tz_iwsock_socket fail for %s, ret=%d\n", name, ret);
 			msleep(200);
 			continue;
 		}
@@ -114,12 +123,12 @@ static __ref int tz_deploy_handler(void *arg)
 			if (!ret)
 				break;
 
-			pr_info("tzdev: connecting to startup loader, attempt %u (ret=%d)...\n",
-				attempt, ret);
+			pr_info("tzdev: connecting to startup loader (%s), attempt %u (ret=%d)...\n",
+				name, attempt, ret);
 			msleep(CONNECTION_ATTEMPT_TIMEOUT);
 		}
 		if (ret < 0) {
-			pr_err("tzdev: tz_iwsock_connect fail, ret=%d\n", ret);
+			pr_err("tzdev: tz_iwsock_connect fail for %s, ret=%d\n", name, ret);
 			tz_iwsock_release(sd);
 			msleep(200);
 			continue;
@@ -127,7 +136,7 @@ static __ref int tz_deploy_handler(void *arg)
 
 		ret = tz_iwsock_write(sd, &command, sizeof(command), 0);
 		if (ret != sizeof(command)) {
-			pr_err("tzdev: tz_iwsock_write fail, ret=%d\n", ret);
+			pr_err("tzdev: tz_iwsock_write fail for %s, ret=%d\n", name, ret);
 			tz_iwsock_release(sd);
 			msleep(200);
 			continue;
@@ -136,31 +145,27 @@ static __ref int tz_deploy_handler(void *arg)
 		memset(&reply, 0, sizeof(reply));
 		ret = tz_iwsock_read(sd, &reply, sizeof(reply), 0);
 		if (ret < 0) {
-			pr_err("tzdev: startup_loader upload failed (attempt %d/%d): read_ret=%d\n",
-				retry_cnt + 1, MAX_LOADING_ATTEMPTS, ret);
+			pr_err("tzdev: startup_loader upload failed (%s, attempt %d/%d): read_ret=%d\n",
+				name, retry_cnt + 1, MAX_LOADING_ATTEMPTS, ret);
 			tz_iwsock_release(sd);
 			msleep(200);
 			continue;
 		}
 
+		tz_iwsock_release(sd);
+
 		if (reply.base.result != 0) {
-			/* Result 22 (EINVAL) or other non-zero result means TEEGRIS already has container
-			 * or explicitly rejected it. Skip gracefully without futile retries! */
-			pr_info("tzdev: startup.tzar deploy rejected/already loaded (result=%u), skipping safely\n",
-				reply.base.result);
-			tz_iwsock_release(sd);
-			tzar_deploy_result = 0;
-			ret = 0;
+			pr_warn("tzdev: %s rejected by secure OS (result=%u)\n",
+				name, reply.base.result);
+			ret = -EINVAL;
 			break;
 		}
 
 		if (reply.base.base.cmd != CMD_STARTUP_LOADER_REPLY_UPLOAD_CONTAINER) {
-			pr_warn("tzdev: unexpected reply cmd=%u\n", reply.base.base.cmd);
+			pr_warn("tzdev: unexpected reply cmd=%u for %s\n", reply.base.base.cmd, name);
 		}
 
-		pr_info("tzdev: [debug] Startuploader complete successfully!\n");
-		tz_iwsock_release(sd);
-		tzar_deploy_result = 0;
+		pr_info("tzdev: [debug] Startuploader complete successfully (%s)!\n", name);
 		ret = 0;
 		break;
 	}
@@ -168,11 +173,34 @@ static __ref int tz_deploy_handler(void *arg)
 	tzdev_mem_release(command.buf_desc.id);
 	vfree(tzar);
 
-	if (tzar_deploy_result != 0) {
-		pr_err("tzdev: Failed to deploy startup.tzar after %d attempts!\n", MAX_LOADING_ATTEMPTS);
+	return ret;
+}
+
+static __ref int tz_deploy_handler(void *arg)
+{
+	size_t tzar_size = tzdev_tzar_end - tzdev_tzar_begin;
+	size_t old_tzar_size = tzdev_old_tzar_end - tzdev_old_tzar_begin;
+	int ret;
+	(void)arg;
+
+	/* 1. First attempt: modern U9 container (matches NFC models like A505FN) */
+	ret = upload_tzar_buffer(tzdev_tzar_begin, tzar_size, "startup.tzar");
+	if (ret == 0) {
+		tzar_deploy_result = 0;
+		return 0;
 	}
 
-	return tzar_deploy_result;
+	/* 2. Fallback attempt: older container (matches non-NFC models like A505F) */
+	pr_info("tzdev: primary startup.tzar rejected/failed, trying fallback startup_old.tzar...\n");
+	ret = upload_tzar_buffer(tzdev_old_tzar_begin, old_tzar_size, "startup_old.tzar");
+	if (ret == 0) {
+		tzar_deploy_result = 0;
+		return 0;
+	}
+
+	pr_err("tzdev: Failed to deploy both primary and fallback startup.tzar!\n");
+	tzar_deploy_result = ret;
+	return ret;
 }
 
 int tzdev_deploy_tzar(void)
