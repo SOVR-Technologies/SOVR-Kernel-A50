@@ -437,7 +437,7 @@ build_package() {
 		echo "ro.mint.build.version=${KERNEL_BUILD_VERSION}" >> $(pwd)/tools/make/package/mint.prop
 	elif [[ ${BUILD_KERNEL_BRANCH} == "sovr" ]]; then
 		echo "ro.mint.droid.beta=${SOVR_IS_BETA:-false}" >> $(pwd)/tools/make/package/mint.prop
-		echo "ro.mint.build.version=${SOVR_VERSION:-v4.1}${SOVR_BETA_TAG}" >> $(pwd)/tools/make/package/mint.prop
+		echo "ro.mint.build.version=${SOVR_VERSION:-v4.2}${SOVR_BETA_TAG}" >> $(pwd)/tools/make/package/mint.prop
 	else
 		echo "ro.mint.droid.beta=true" >> $(pwd)/tools/make/package/mint.prop
 		echo "ro.mint.build.version=${GITHUB_RUN_NUMBER}" >> $(pwd)/tools/make/package/mint.prop
