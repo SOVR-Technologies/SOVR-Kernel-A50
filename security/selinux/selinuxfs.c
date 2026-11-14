@@ -177,6 +177,8 @@ static ssize_t sel_write_enforce(struct file *file, const char __user *buf,
 #if !defined(CONFIG_RKP_KDP)
      selinux_enforcing = new_value;
 #endif
+     if (state)
+         state->enforcing = new_value;
      avc_ss_reset(state->avc, 0);
      selnl_notify_setenforce(new_value);
      selinux_status_update_setenforce(state, new_value);

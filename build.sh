@@ -204,6 +204,7 @@ show_usage() {
 	script_echo "-m, --magisk [canary]     Pre-root the kernel with Magisk. Optional flag to use canary builds."
 	script_echo "                          Not available for 'recovery' variant."
 	script_echo "-p, --permissive          Build kernel with SELinux fully permissive. NOT RECOMMENDED!"
+	script_echo "-e, --enforcing           Build kernel with strict SELinux Enforcing (default)."
 	script_echo " "
 	script_echo "-h, --help                Show this message."
 	script_echo " "
@@ -295,9 +296,14 @@ build_image() {
 		script_echo "     Android Version: ${PLATFORM_VERSION}"
 		script_echo "Security patch level: ${PLATFORM_PATCH_LEVEL}"
 
+		local BOOT_CMDLINE="loop.max_part=7"
+		if [[ ${BUILD_KERNEL_PERMISSIVE} == 'true' ]]; then
+			BOOT_CMDLINE="androidboot.selinux=permissive ${BOOT_CMDLINE}"
+		fi
+
 		${ORIGIN_DIR}/tools/make/bin/mkbootimg \
 				  --kernel $(pwd)/arch/arm64/boot/Image \
-				  --cmdline "androidboot.selinux=permissive androidboot.selinux=permissive loop.max_part=7" --board "$DEVICE_KERNEL_BOARD" \
+				  --cmdline "${BOOT_CMDLINE}" --board "$DEVICE_KERNEL_BOARD" \
 				  --base $DEVICE_KERNEL_BASE --pagesize $DEVICE_KERNEL_PAGESIZE \
 				  --kernel_offset $DEVICE_KERNEL_OFFSET --ramdisk_offset $DEVICE_RAMDISK_OFFSET \
 				  --second_offset $DEVICE_SECOND_OFFSET --tags_offset $DEVICE_TAGS_OFFSET \
@@ -355,16 +361,16 @@ if [[ ${BUILD_KERNEL_CODE} == "oneui" ]]; then
 	ZIP_ONEUI_VERSION="$((${BUILD_ANDROID_PLATFORM} - 8))"
 fi
 
+if [[ ${BUILD_KERNEL_PERMISSIVE} == 'true' ]]; then
+	FILE_NAME_SELINUX="Permissive"
+else
+	FILE_NAME_SELINUX="Enforcing"
+fi
+
 if [[ ! -z ${BUILD_KERNEL_BRANCH} ]]; then
 
 	if [[ ${BUILD_KERNEL_BRANCH} == *"android-"* ]]; then
 		BUILD_KERNEL_BRANCH='mainline'
-	fi
-
-	if [[ ${BUILD_KERNEL_PERMISSIVE} == 'true' ]]; then
-		FILE_NAME_SELINUX="Permissive"
-	else
-		FILE_NAME_SELINUX="Enforcing"
 	fi
 
 	if [[ ${BUILD_KERNEL_BRANCH} == "mainline" ]]; then
@@ -388,6 +394,7 @@ if [[ ! -z ${BUILD_KERNEL_BRANCH} ]]; then
 	fi
 else
 	SOVR_VERSION="v4.2"
+	SOVR_VERSION_NUM="${SOVR_VERSION#v}"
 	if [[ ${BUILD_KERNEL_CODE} == "oneui" && ${BUILD_ANDROID_PLATFORM} == 14 ]]; then
 		SOVR_BETA_TAG=""
 		SOVR_BETA_LOCAL=""
@@ -398,15 +405,23 @@ else
 		SOVR_IS_BETA="true"
 	fi
 
-	if [[ ${BUILD_KERNEL_KSU} == 'true' ]]; then
-		FILE_OUTPUT=SOVR-Kernel-${SOVR_VERSION}${SOVR_BETA_TAG}.A${BUILD_ANDROID_PLATFORM}_${FILE_KERNEL_CODE}${ZIP_ONEUI_VERSION}_${BUILD_DEVICE_NAME^}_KSU.zip
-		LOCALVERSION=" OpenELA + ELTS - SOVR 4.2${SOVR_BETA_LOCAL} KSU"
-	elif [[ ${BUILD_KERNEL_MAGISK} == 'true' ]]; then
-		FILE_OUTPUT=SOVR-Kernel-${SOVR_VERSION}${SOVR_BETA_TAG}.A${BUILD_ANDROID_PLATFORM}_${FILE_KERNEL_CODE}${ZIP_ONEUI_VERSION}_${BUILD_DEVICE_NAME^}_Magisk.zip
-		LOCALVERSION=" OpenELA + ELTS - SOVR 4.2${SOVR_BETA_LOCAL} Magisk"
+	if [[ ${BUILD_KERNEL_PERMISSIVE} == 'true' ]]; then
+		SOVR_SELINUX_TAG="_Permissive"
+		SOVR_SELINUX_LOCAL=" Permissive"
 	else
-		FILE_OUTPUT=SOVR-Kernel-${SOVR_VERSION}${SOVR_BETA_TAG}.A${BUILD_ANDROID_PLATFORM}_${FILE_KERNEL_CODE}${ZIP_ONEUI_VERSION}_${BUILD_DEVICE_NAME^}.zip
-		LOCALVERSION=" OpenELA + ELTS - SOVR 4.2${SOVR_BETA_LOCAL} Non-KSU"
+		SOVR_SELINUX_TAG=""
+		SOVR_SELINUX_LOCAL=" Enforcing"
+	fi
+
+	if [[ ${BUILD_KERNEL_KSU} == 'true' ]]; then
+		FILE_OUTPUT=SOVR-Kernel-${SOVR_VERSION}${SOVR_BETA_TAG}.A${BUILD_ANDROID_PLATFORM}_${FILE_KERNEL_CODE}${ZIP_ONEUI_VERSION}_${BUILD_DEVICE_NAME^}_KSU${SOVR_SELINUX_TAG}.zip
+		LOCALVERSION=" OpenELA + ELTS - SOVR ${SOVR_VERSION_NUM}${SOVR_BETA_LOCAL}${SOVR_SELINUX_LOCAL} KSU"
+	elif [[ ${BUILD_KERNEL_MAGISK} == 'true' ]]; then
+		FILE_OUTPUT=SOVR-Kernel-${SOVR_VERSION}${SOVR_BETA_TAG}.A${BUILD_ANDROID_PLATFORM}_${FILE_KERNEL_CODE}${ZIP_ONEUI_VERSION}_${BUILD_DEVICE_NAME^}_Magisk${SOVR_SELINUX_TAG}.zip
+		LOCALVERSION=" OpenELA + ELTS - SOVR ${SOVR_VERSION_NUM}${SOVR_BETA_LOCAL}${SOVR_SELINUX_LOCAL} Magisk"
+	else
+		FILE_OUTPUT=SOVR-Kernel-${SOVR_VERSION}${SOVR_BETA_TAG}.A${BUILD_ANDROID_PLATFORM}_${FILE_KERNEL_CODE}${ZIP_ONEUI_VERSION}_${BUILD_DEVICE_NAME^}${SOVR_SELINUX_TAG}.zip
+		LOCALVERSION=" OpenELA + ELTS - SOVR ${SOVR_VERSION_NUM}${SOVR_BETA_LOCAL}${SOVR_SELINUX_LOCAL} Non-KSU"
 	fi
 
 	BUILD_KERNEL_BRANCH='sovr'
@@ -445,6 +460,7 @@ build_package() {
 	
 	echo "ro.mint.droid.android=${BUILD_ANDROID_PLATFORM}" >> $(pwd)/tools/make/package/mint.prop
 	echo "ro.mint.droid.platform=11-16" >> $(pwd)/tools/make/package/mint.prop
+	echo "ro.mint.droid.selinux=${FILE_NAME_SELINUX}" >> $(pwd)/tools/make/package/mint.prop
 
 	# Device support
 	echo "ro.mint.device.name1=${BUILD_DEVICE_NAME}" >> $(pwd)/tools/make/package/mint.prop
@@ -458,7 +474,8 @@ build_package() {
 
 	zip -9 -r ./${FILE_OUTPUT} ./* 2>&1 | sed 's/^/     /'
 	mv ./${FILE_OUTPUT} ${BUILD_KERNEL_OUTPUT}
-	WIN_OUTPUT_DIR="/mnt/d/Kernels/SOVR A50"
+	rm -f ./Image ./dtb.img ./mint.prop
+	WIN_OUTPUT_DIR="${WIN_OUTPUT_DIR-/mnt/d/Kernels/SOVR A50}"
 	if [[ -d "${WIN_OUTPUT_DIR}" ]]; then
 		script_echo "I: Copying ${FILE_OUTPUT} to Windows folder (${WIN_OUTPUT_DIR})..."
 		cp -f "${BUILD_KERNEL_OUTPUT}" "${WIN_OUTPUT_DIR}/${FILE_OUTPUT}"
@@ -536,6 +553,10 @@ while [[ $# -gt 0 ]]; do
       BUILD_KERNEL_PERMISSIVE='true'
       shift
       ;;
+    -e|--enforcing)
+      BUILD_KERNEL_PERMISSIVE='false'
+      shift
+      ;;
     -t|--toolchain)
       BUILD_PREF_COMPILER_VERSION="${2:-neutron}"
       shift; shift
@@ -595,7 +616,6 @@ fi
 
 BUILD_DEVICE_CONFIG=exynos9610-${BUILD_DEVICE_NAME}_core_defconfig
 BUILD_DEVICE_TMP_CONFIG=tmp_exynos9610-${BUILD_DEVICE_NAME}_${BUILD_KERNEL_CODE}_defconfig
-export KCONFIG_BUILTINCONFIG=${BUILD_CONFIG_DIR}/exynos9610-${BUILD_DEVICE_NAME}_core_defconfig
 BUILD_DEVICE_OUTPUT=${BUILD_OUTPUT_DIR}/${BUILD_DEVICE_NAME}
 
 if [[ ! -e "${DEVICE_DB_DIR}/kernel_info.sh" ]]; then
@@ -637,6 +657,7 @@ else
 	script_echo "   Selected variant:   ${FILE_KERNEL_CODE}"
 	script_echo "   Kernel version:     ${VERSION}.${PATCHLEVEL}.${SUBLEVEL}"
 	script_echo "   Android version:    ${BUILD_ANDROID_PLATFORM}"
+	script_echo "   SELinux mode:       ${FILE_NAME_SELINUX}"
 	script_echo "   Magisk-enabled:     ${BUILD_KERNEL_MAGISK}"
 	script_echo "   Output ZIP file:    ${BUILD_KERNEL_OUTPUT}"
 fi
@@ -705,6 +726,9 @@ if [[ ${BUILD_KERNEL_PERMISSIVE} == 'true' ]]; then
 	script_echo "         This is insecure and may make your device vulnerable"
 	script_echo "         This kernel has NO RESPONSIBILITY on whatever happens next."
 	merge_config selinux-permissive
+elif [[ ${BUILD_KERNEL_CODE} != 'recovery' ]]; then
+	script_echo "I: Building kernel in strict SELinux Enforcing mode."
+	merge_config selinux-enforcing
 fi
 
 if [[ ${BUILD_KERNEL_MAGISK} == 'true' ]]; then

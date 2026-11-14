@@ -123,6 +123,8 @@ static inline bool enforcing_enabled(struct selinux_state *state)
 static inline void enforcing_set(struct selinux_state *state, bool value)
 {
 	selinux_enforcing = value; // SEC_SELINUX_PORTING_COMMON Change to use RKP
+	if (state)
+		state->enforcing = value;
 }
 #else
 static inline bool enforcing_enabled(struct selinux_state *state)

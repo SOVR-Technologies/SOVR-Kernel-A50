@@ -202,7 +202,10 @@ static DEFINE_MUTEX(selinux_sdcardfs_lock);
 #if defined(CONFIG_ALWAYS_ENFORCE)
 int selinux_enforcing = 1;
 // CONFIG_RKP_KDP
-static int selinux_enforcing_boot __kdp_ro;
+static int selinux_enforcing_boot __kdp_ro = 1;
+#elif defined(CONFIG_ALWAYS_PERMIT)
+int selinux_enforcing = 0;
+static int selinux_enforcing_boot = 0;
 #else
 int selinux_enforcing;
 static int selinux_enforcing_boot;
@@ -218,6 +221,9 @@ static int __init enforcing_setup(char *str)
 #ifdef CONFIG_ALWAYS_ENFORCE
 		selinux_enforcing_boot = 1;
 		selinux_enforcing = 1;
+#elif defined(CONFIG_ALWAYS_PERMIT)
+		selinux_enforcing_boot = 0;
+		selinux_enforcing = 0;
 #else
 		selinux_enforcing_boot = enforcing ? 1 : 0;
 		selinux_enforcing = enforcing ? 1 : 0;
@@ -7170,6 +7176,13 @@ static __init int selinux_init(void)
 	pr_info("SELinux:  Initializing.\n");
 
 	memset(&selinux_state, 0, sizeof(selinux_state));
+// [ SEC_SELINUX_PORTING_COMMON
+#ifdef CONFIG_ALWAYS_ENFORCE
+	selinux_enforcing_boot = 1;
+#elif defined(CONFIG_ALWAYS_PERMIT)
+	selinux_enforcing_boot = 0;
+#endif
+// ] SEC_SELINUX_PORTING_COMMON
 	enforcing_set(&selinux_state, selinux_enforcing_boot);
 	selinux_state.checkreqprot = selinux_checkreqprot_boot;
 	selinux_ss_init(&selinux_state.ss);
