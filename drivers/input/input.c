@@ -773,33 +773,19 @@ void input_booster_init(void)
 					printk("Failed to get [%d] param table property\n", i);
 				}
 
-				/* SOVR Hardcore Booster Optimization (v4.1 Full-Throttle Tuning)
-				 * Covers:
-				 *   type 0: KEY (Power key, Volume) -> instant screen wakeup without display lag
-				 *   type 1: TOUCHKEY (Back, Recents)
-				 *   type 2: TOUCH (Tap, scroll, swipe)
-				 *   type 3: MULTITOUCH (Gestures, gaming)
-				 *   type 4: KEYBOARD
+				/* SOVR Balanced Touch Booster:
+				 * Only raise the initial touch/multitouch head phase onto efficient
+				 * Exynos 9610 OPP steps (1.352 GHz A73 / 910 MHz A53) while preserving
+				 * stock DT head/tail durations and bus clocks for keys and idle playback.
 				 */
-				if (dt_infor->type >= 0 && dt_infor->type <= 4) {
-					/* Big cluster (Cortex-A73) boost: 1.898 GHz */
-					if (dt_infor->param_tables[i].cpu_freq < 1898000)
-						dt_infor->param_tables[i].cpu_freq = 1898000;
-					/* Little cluster (Cortex-A53) boost: 1.326 GHz */
-					if (dt_infor->param_tables[i].kfc_freq < 1326000)
-						dt_infor->param_tables[i].kfc_freq = 1326000;
-					/* Boost interaction head window to 350ms */
-					if (dt_infor->param_tables[i].head_time < 350)
-						dt_infor->param_tables[i].head_time = 350;
-					/* Full-Throttle Tail Boost: guarantee 500ms at high clock to complete menu loads & animations */
-					if (dt_infor->param_tables[i].tail_time < 500)
-						dt_infor->param_tables[i].tail_time = 500;
-					/* Boost LPDDR4x Memory Bus to 1.01 GHz */
-					if (dt_infor->param_tables[i].mif_freq < 1014000)
-						dt_infor->param_tables[i].mif_freq = 1014000;
-					/* Boost Internal AXI Bus to 546 MHz */
-					if (dt_infor->param_tables[i].int_freq < 546000)
-						dt_infor->param_tables[i].int_freq = 546000;
+				if ((dt_infor->type == 2 || dt_infor->type == 3) &&
+				    dt_infor->param_tables[i].head_time > 0) {
+					if (dt_infor->param_tables[i].cpu_freq > 0 &&
+					    dt_infor->param_tables[i].cpu_freq < 1352000)
+						dt_infor->param_tables[i].cpu_freq = 1352000;
+					if (dt_infor->param_tables[i].kfc_freq > 0 &&
+					    dt_infor->param_tables[i].kfc_freq < 910000)
+						dt_infor->param_tables[i].kfc_freq = 910000;
 				}
 
 				printk("[Input Booster] Level %d : frequency[%d,%d,%d,%d] hmp_boost[%d] dma_latency[%d] times[%d,%d,%d]\n", i,

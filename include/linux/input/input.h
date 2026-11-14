@@ -367,18 +367,6 @@ static void input_booster_##_DEVICE_##_reset_booster_work_func(struct work_struc
 			tail_param->head_time = (*head_time == (unsigned int)(-1)) ? tail_param->head_time : *head_time; \
 			tail_param->tail_time = (*tail_time == (unsigned int)(-1)) ? tail_param->tail_time : *tail_time; \
 		} \
-		if (head_param != NULL) { \
-			if (head_param->cpu_freq < 1898000) head_param->cpu_freq = 1898000; \
-			if (head_param->kfc_freq < 1326000) head_param->kfc_freq = 1326000; \
-			if (head_param->mif_freq < 1014000) head_param->mif_freq = 1014000; \
-			if (head_param->head_time < 350) head_param->head_time = 350; \
-		} \
-		if (tail_param != NULL) { \
-			if (tail_param->cpu_freq < 1898000) tail_param->cpu_freq = 1898000; \
-			if (tail_param->kfc_freq < 1326000) tail_param->kfc_freq = 1326000; \
-			if (tail_param->mif_freq < 1014000) tail_param->mif_freq = 1014000; \
-			if (tail_param->tail_time < 500) tail_param->tail_time = 500; \
-		} \
 		CHANGE_BOOSTER \
 		return count; \
 	} \

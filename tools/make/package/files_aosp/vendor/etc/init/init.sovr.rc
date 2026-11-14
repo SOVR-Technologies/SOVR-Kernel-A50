@@ -2,7 +2,7 @@
 # Automatically loaded by vendor init on every boot
 
 on early-init
-    write /proc/sys/kernel/sched_nr_migrate 20
+    write /proc/sys/kernel/sched_nr_migrate 16
 
 on boot
     # SurfaceFlinger fluidity & backpressure fixes for Mali-G72 on GSIs
@@ -22,16 +22,16 @@ on property:sys.boot_completed=1
     write /proc/sys/net/ipv4/tcp_fastopen 3
     write /proc/sys/net/ipv4/tcp_tw_reuse 1
 
-    # CPU governor responsiveness (SOVR Energy Adaptive)
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 1
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 1
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 100
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 5000
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 50
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 5000
+    # CPU governor balance (SOVR Energy Adaptive)
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 0
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 0
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 500
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 4000
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 500
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 4000
 
     # VM & Cache tuning
-    write /proc/sys/vm/swappiness 160
+    write /proc/sys/vm/swappiness 130
     write /proc/sys/vm/vfs_cache_pressure 60
     write /proc/sys/vm/dirty_background_ratio 5
     write /proc/sys/vm/dirty_ratio 15

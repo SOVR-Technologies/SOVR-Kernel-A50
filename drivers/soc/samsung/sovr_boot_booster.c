@@ -168,17 +168,17 @@ void sovr_boot_boost_finish(void)
 	/* Pin VFS cache pressure to 60 to keep directory/inode caches in RAM */
 	sysctl_vfs_cache_pressure = 60;
 
-	/* Apply SOVR v4.1 runtime VM & memory optimizations */
-	vm_swappiness = 160;
-	direct_vm_swappiness = 70;
+	/* Apply balanced runtime VM & scheduler defaults */
+	vm_swappiness = 130;
+	direct_vm_swappiness = 60;
 	vm_dirty_ratio = 15;
 	dirty_background_ratio = 5;
 	dirty_expire_interval = 3000;
 	dirty_writeback_interval = 3000;
-	sysctl_sched_nr_migrate = 20;
-	sysctl_sched_migration_cost = 500000;
+	sysctl_sched_nr_migrate = 16;
+	sysctl_sched_migration_cost = 1500000;
 
-	pr_info("Boot completed: Acceleration DEACTIVATED cleanly. CPU governed dynamically, I/O set to %u KB ra, ZRAM swappiness=160/70, dirty=15/5, writeback=3000.\n",
+	pr_info("Boot completed: Acceleration DEACTIVATED cleanly. CPU governed dynamically, I/O set to %u KB ra, ZRAM swappiness=130/60, dirty=15/5, writeback=3000.\n",
 		SOVR_RESTORE_READ_AHEAD_KB);
 
 	mutex_unlock(&booster_lock);
