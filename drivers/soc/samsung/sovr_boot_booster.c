@@ -42,7 +42,11 @@ extern unsigned int sysctl_sched_migration_cost;
 #include <linux/mutex.h>
 #include <soc/samsung/sovr_boot_booster.h>
 
+#ifdef CONFIG_KSU
 #define SOVR_DEFAULT_TIMEOUT_SECS     50
+#else
+#define SOVR_DEFAULT_TIMEOUT_SECS     30
+#endif
 #define SOVR_BOOT_CL0_FREQ           1534000 /* 1.53 GHz */
 #define SOVR_BOOT_CL1_FREQ           2184000 /* 2.18 GHz */
 #define SOVR_BOOT_MIF_FREQ           1352000 /* LPDDR4x Memory bus: 1.35 GHz */
@@ -169,16 +173,16 @@ void sovr_boot_boost_finish(void)
 	sysctl_vfs_cache_pressure = 60;
 
 	/* Apply balanced runtime VM & scheduler defaults */
-	vm_swappiness = 130;
+	vm_swappiness = 140;
 	direct_vm_swappiness = 60;
 	vm_dirty_ratio = 15;
 	dirty_background_ratio = 5;
 	dirty_expire_interval = 3000;
 	dirty_writeback_interval = 3000;
-	sysctl_sched_nr_migrate = 16;
-	sysctl_sched_migration_cost = 1500000;
+	sysctl_sched_nr_migrate = 20;
+	sysctl_sched_migration_cost = 500000;
 
-	pr_info("Boot completed: Acceleration DEACTIVATED cleanly. CPU governed dynamically, I/O set to %u KB ra, ZRAM swappiness=130/60, dirty=15/5, writeback=3000.\n",
+	pr_info("Boot completed: Acceleration DEACTIVATED cleanly. CPU governed dynamically, I/O set to %u KB ra, ZRAM swappiness=140/60, dirty=15/5, writeback=3000.\n",
 		SOVR_RESTORE_READ_AHEAD_KB);
 
 	mutex_unlock(&booster_lock);

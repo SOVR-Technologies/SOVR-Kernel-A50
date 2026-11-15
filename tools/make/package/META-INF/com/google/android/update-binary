@@ -337,6 +337,7 @@ do_variantcheck() {
   mount /system_root 2>/dev/null;
   mount /vendor 2>/dev/null;
   oneui=$(file_getprop "/system_root/system/build.prop" "ro.build.PDA");
+  [ -z "$oneui" ] && oneui=$(file_getprop "/system/build.prop" "ro.build.PDA");
   kernel_platform=$(file_getprop mint.prop ro.mint.droid.variant | $BB tr 'A-Z' 'a-z');
 
   # If ro.build.PDA is not blank, it's a One UI ROM.

@@ -784,12 +784,10 @@ endif
 
 ifeq ($(cc-name),clang)
 ifeq ($(CONFIG_SOC_EXYNOS9610), y)
-KBUILD_CFLAGS	+= -march=armv8-a+crypto+crc+sha2+aes -mtune=cortex-a53 \
-			-mcpu=cortex-a53+crypto+crc+sha2+aes
+KBUILD_CFLAGS	+= -march=armv8-a+crypto+crc+sha2+aes -mtune=cortex-a73 \
+			-mcpu=cortex-a73+crypto+crc+sha2+aes
 endif
 
-ifeq ($(call clang-ifversion, -lt, 1400, y), y)
-ifeq ($(call clang-ifversion, -lt, 1400, y), y)
 ifeq ($(call clang-ifversion, -lt, 1400, y), y)
 ifdef CONFIG_LLVM_POLLY
 KBUILD_CFLAGS	+= -mllvm -polly \
@@ -800,8 +798,6 @@ KBUILD_CFLAGS	+= -mllvm -polly \
 		   -mllvm -polly-vectorizer=stripmine \
 		   -mllvm -polly-invariant-load-hoisting
 KBUILD_CFLAGS	+= $(call cc-option,-mllvm -polly-opt-fusion=max)
-endif
-endif
 endif
 endif
 else ifeq ($(cc-name),gcc)

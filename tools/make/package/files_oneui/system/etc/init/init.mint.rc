@@ -33,4 +33,4 @@ on property:sys.boot_completed=1
     write /proc/sys/net/ipv4/tcp_fastopen 3
     write /proc/sys/net/ipv4/tcp_tw_reuse 1
 
-   write /sys/kernel/sovr_boot_booster/active 0
+    write /sys/kernel/sovr_boot_booster/active 0

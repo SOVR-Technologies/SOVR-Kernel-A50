@@ -13,6 +13,8 @@ on boot
     setprop persist.sys.phh.sf_auto_latch_unsignaled 0
 
 on property:sys.boot_completed=1
+    write /sys/kernel/sovr_boot_booster/active 0
+
     # SOVR TCP Network Tuning (BBR buffer & latency optimization)
     write /proc/sys/net/core/rmem_max 16777216
     write /proc/sys/net/core/wmem_max 8388608
@@ -23,15 +25,17 @@ on property:sys.boot_completed=1
     write /proc/sys/net/ipv4/tcp_tw_reuse 1
 
     # CPU governor balance (SOVR Energy Adaptive)
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 0
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 0
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 500
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 4000
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 500
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 4000
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 250
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 2000
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 100
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 2000
 
-    # VM & Cache tuning
-    write /proc/sys/vm/swappiness 130
+    # VM & Scheduler tuning
+    write /proc/sys/kernel/sched_nr_migrate 20
+    write /proc/sys/kernel/sched_migration_cost_ns 500000
+    write /proc/sys/vm/swappiness 140
     write /proc/sys/vm/vfs_cache_pressure 60
     write /proc/sys/vm/dirty_background_ratio 5
     write /proc/sys/vm/dirty_ratio 15

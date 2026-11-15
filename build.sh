@@ -433,48 +433,65 @@ build_package() {
 	script_echo " "
 	script_echo "I: Building kernel ZIP..."
 
-	# Copy kernel image to package directory
-	mv $(pwd)/arch/arm64/boot/Image $(pwd)/tools/make/package/Image -f
+	local PKG_SRC="${ORIGIN_DIR}/tools/make/package"
+	local PKG_STAGE
+	PKG_STAGE=$(mktemp -d "/tmp/sovr_pkg.XXXXXX")
+	cp -a "${PKG_SRC}/META-INF" "${PKG_SRC}/tools" "${PKG_SRC}/LICENSE" "${PKG_SRC}/banner" "${PKG_SRC}/mint.sh" "${PKG_STAGE}/"
 
-	# Copy DTB image to package directory
-	mv $(pwd)/arch/arm64/boot/dtb_exynos.img $(pwd)/tools/make/package/dtb.img -f
+	# Include ONLY variant/version-specific installer assets
+	if [[ ${BUILD_KERNEL_CODE} == "aosp" ]]; then
+		cp -a "${PKG_SRC}/files_aosp" "${PKG_STAGE}/"
+		mkdir -p "${PKG_STAGE}/patch"
+		cp -a "${PKG_SRC}/patch/init.zram.rc" "${PKG_STAGE}/patch/"
+	elif [[ ${BUILD_KERNEL_CODE} == "oneui" ]]; then
+		if [[ ${BUILD_ANDROID_PLATFORM} -eq 11 ]]; then
+			cp -a "${PKG_SRC}/files_oneui" "${PKG_STAGE}/"
+			mkdir -p "${PKG_STAGE}/patch"
+			cp -a "${PKG_SRC}/patch/init.ramplus.rc" "${PKG_SRC}/patch/init.pageboost.rc" "${PKG_STAGE}/patch/"
+		elif [[ ${BUILD_ANDROID_PLATFORM} -eq 12 || ${BUILD_ANDROID_PLATFORM} -eq 13 ]]; then
+			cp -a "${PKG_SRC}/files_fresh" "${PKG_STAGE}/"
+		fi
+	fi
+
+	# Move kernel image and DTB into isolated staging directory
+	mv "${ORIGIN_DIR}/arch/arm64/boot/Image" "${PKG_STAGE}/Image" -f
+	mv "${ORIGIN_DIR}/arch/arm64/boot/dtb_exynos.img" "${PKG_STAGE}/dtb.img" -f
 
 	# Make the manifest
-	touch $(pwd)/tools/make/package/mint.prop
-
-	echo "ro.mint.build.date=${BUILD_DATE}" > $(pwd)/tools/make/package/mint.prop
-	echo "ro.mint.build.branch=${BUILD_KERNEL_BRANCH}" >> $(pwd)/tools/make/package/mint.prop
-	echo "ro.mint.droid.device=${BUILD_DEVICE_NAME^}" >> $(pwd)/tools/make/package/mint.prop
-	echo "ro.mint.droid.variant=${FILE_KERNEL_CODE^}" >> $(pwd)/tools/make/package/mint.prop
+	local PROP_FILE="${PKG_STAGE}/mint.prop"
+	echo "ro.mint.build.date=${BUILD_DATE}" > "${PROP_FILE}"
+	echo "ro.mint.build.branch=${BUILD_KERNEL_BRANCH}" >> "${PROP_FILE}"
+	echo "ro.mint.droid.device=${BUILD_DEVICE_NAME^}" >> "${PROP_FILE}"
+	echo "ro.mint.droid.variant=${FILE_KERNEL_CODE^}" >> "${PROP_FILE}"
 
 	if [[ ${BUILD_KERNEL_BRANCH} == "mainline" ]]; then
-		echo "ro.mint.droid.beta=false" >> $(pwd)/tools/make/package/mint.prop
-		echo "ro.mint.build.version=${KERNEL_BUILD_VERSION}" >> $(pwd)/tools/make/package/mint.prop
+		echo "ro.mint.droid.beta=false" >> "${PROP_FILE}"
+		echo "ro.mint.build.version=${KERNEL_BUILD_VERSION}" >> "${PROP_FILE}"
 	elif [[ ${BUILD_KERNEL_BRANCH} == "sovr" ]]; then
-		echo "ro.mint.droid.beta=${SOVR_IS_BETA:-false}" >> $(pwd)/tools/make/package/mint.prop
-		echo "ro.mint.build.version=${SOVR_VERSION:-v4.2}${SOVR_BETA_TAG}" >> $(pwd)/tools/make/package/mint.prop
+		echo "ro.mint.droid.beta=${SOVR_IS_BETA:-false}" >> "${PROP_FILE}"
+		echo "ro.mint.build.version=${SOVR_VERSION:-v4.2}${SOVR_BETA_TAG}" >> "${PROP_FILE}"
 	else
-		echo "ro.mint.droid.beta=true" >> $(pwd)/tools/make/package/mint.prop
-		echo "ro.mint.build.version=${GITHUB_RUN_NUMBER}" >> $(pwd)/tools/make/package/mint.prop
+		echo "ro.mint.droid.beta=true" >> "${PROP_FILE}"
+		echo "ro.mint.build.version=${GITHUB_RUN_NUMBER}" >> "${PROP_FILE}"
 	fi
-	
-	echo "ro.mint.droid.android=${BUILD_ANDROID_PLATFORM}" >> $(pwd)/tools/make/package/mint.prop
-	echo "ro.mint.droid.platform=11-16" >> $(pwd)/tools/make/package/mint.prop
-	echo "ro.mint.droid.selinux=${FILE_NAME_SELINUX}" >> $(pwd)/tools/make/package/mint.prop
+
+	echo "ro.mint.droid.android=${BUILD_ANDROID_PLATFORM}" >> "${PROP_FILE}"
+	echo "ro.mint.droid.platform=11-16" >> "${PROP_FILE}"
+	echo "ro.mint.droid.selinux=${FILE_NAME_SELINUX}" >> "${PROP_FILE}"
 
 	# Device support
-	echo "ro.mint.device.name1=${BUILD_DEVICE_NAME}" >> $(pwd)/tools/make/package/mint.prop
-	echo "ro.mint.device.name2=${BUILD_DEVICE_NAME}xx" >> $(pwd)/tools/make/package/mint.prop
-	echo "ro.mint.device.name3=${BUILD_DEVICE_NAME}dd" >> $(pwd)/tools/make/package/mint.prop
-	echo "ro.mint.device.name4=${BUILD_DEVICE_NAME}ser" >> $(pwd)/tools/make/package/mint.prop
-	echo "ro.mint.device.name5=${BUILD_DEVICE_NAME}ltn" >> $(pwd)/tools/make/package/mint.prop
-	echo "ro.mint.device.name6=${BUILD_DEVICE_NAME}*" >> $(pwd)/tools/make/package/mint.prop
+	echo "ro.mint.device.name1=${BUILD_DEVICE_NAME}" >> "${PROP_FILE}"
+	echo "ro.mint.device.name2=${BUILD_DEVICE_NAME}xx" >> "${PROP_FILE}"
+	echo "ro.mint.device.name3=${BUILD_DEVICE_NAME}dd" >> "${PROP_FILE}"
+	echo "ro.mint.device.name4=${BUILD_DEVICE_NAME}ser" >> "${PROP_FILE}"
+	echo "ro.mint.device.name5=${BUILD_DEVICE_NAME}ltn" >> "${PROP_FILE}"
+	echo "ro.mint.device.name6=${BUILD_DEVICE_NAME}*" >> "${PROP_FILE}"
 
-	cd $(pwd)/tools/make/package
-
+	cd "${PKG_STAGE}"
 	zip -9 -r ./${FILE_OUTPUT} ./* 2>&1 | sed 's/^/     /'
-	mv ./${FILE_OUTPUT} ${BUILD_KERNEL_OUTPUT}
-	rm -f ./Image ./dtb.img ./mint.prop
+	mv ./${FILE_OUTPUT} "${BUILD_KERNEL_OUTPUT}"
+	cd "${ORIGIN_DIR}"
+	rm -rf "${PKG_STAGE}" 
 	WIN_OUTPUT_DIR="${WIN_OUTPUT_DIR-/mnt/d/Kernels/SOVR A50}"
 	if [[ -d "${WIN_OUTPUT_DIR}" ]]; then
 		script_echo "I: Copying ${FILE_OUTPUT} to Windows folder (${WIN_OUTPUT_DIR})..."

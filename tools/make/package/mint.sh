@@ -77,13 +77,13 @@ if [ ! -z "$oneui" ] || [ ! -z "$fresh" ]; then
 		patch_prop /vendor/build.prop 'ro.config.pageboost.io_prefetch.enabled' "true"
 		patch_prop /vendor/build.prop 'ro.config.pageboost.io_prefetch.level' "3"
 
-		cp -rf $AK_FOLDER/files_oneui/system/etc/init/init.mint.rc /system/etc/init/init.mint.rc
-		cp -rf $AK_FOLDER/files_oneui/system/etc/init/init.mint.rc /system_root/system/etc/init/init.mint.rc
-		cp -rf $AK_FOLDER/files_oneui/vendor/etc/fstab.sqzr /vendor/etc/fstab.sqzr
+		cp -rf $AK_FOLDER/files_oneui/system/etc/init/init.mint.rc /system/etc/init/init.mint.rc 2>/dev/null || true
+		cp -rf $AK_FOLDER/files_oneui/system/etc/init/init.mint.rc /system_root/system/etc/init/init.mint.rc 2>/dev/null || true
+		cp -rf $AK_FOLDER/files_oneui/vendor/etc/fstab.sqzr /vendor/etc/fstab.sqzr 2>/dev/null || true
 
-		chmod 644 /system/etc/init/init.mint.rc
-		chmod 644 /system_root/system/etc/init/init.mint.rc
-		chmod 644 /vendor/etc/fstab.sqzr
+		chmod 644 /system/etc/init/init.mint.rc 2>/dev/null || true
+		chmod 644 /system_root/system/etc/init/init.mint.rc 2>/dev/null || true
+		chmod 644 /vendor/etc/fstab.sqzr 2>/dev/null || true
 
 		# Disable SSWAP for RAM Plus and Pageboost
 		remove_section ${VENDOR_INIT_RC} 'service swapon /system/bin/sswap -s -z -f 2048' 'oneshot'
@@ -92,13 +92,9 @@ if [ ! -z "$oneui" ] || [ ! -z "$fresh" ]; then
 		replace_string ${VENDOR_INIT_RC} 'swapon_all /vendor/etc/fstab.dummy' 'swapon_all /vendor/etc/fstab.zram' 'swapon_all /vendor/etc/fstab.sqzr' global
 		append_file ${VENDOR_INIT_RC} 'swapon_all /vendor/etc/fstab.sqzr' init.ramplus.rc
 		append_file ${VENDOR_INIT_RC} 'start pageboostd' init.pageboost.rc
-	elif [ "${sdk_ver}" == "34" ] || [ "${sdk_ver}" == "35" ]; then
+	elif [ "${sdk_ver}" == "34" ] || [ "${sdk_ver}" == "35" ] || [ "${sdk_ver}" == "36" ]; then
 		ui_print "  - One UI 6+ / Fresh 6 detected (Android 14+)!"
-		ui_print "    - Installing SOVR performance profile (Zest)..."
-		cp -rf $AK_FOLDER/files_fresh/system/etc/init/init.fresh.perf.rc /system/etc/init/init.fresh.perf.rc 2>/dev/null || true
-		cp -rf $AK_FOLDER/files_fresh/system/etc/init/init.fresh.perf.rc /system_root/system/etc/init/init.fresh.perf.rc 2>/dev/null || true
-		chmod 644 /system/etc/init/init.fresh.perf.rc 2>/dev/null || true
-		chmod 644 /system_root/system/etc/init/init.fresh.perf.rc 2>/dev/null || true
+		ui_print "    - Using pure SOVR kernel defaults (EROFS system)" 
 	else
 		ui_print "  - One UI 4/5 / Fresh 4/5 detected (Android 12/13)!"
 		ui_print "    - Installing SOVR performance profile (Zest)..."
@@ -111,12 +107,15 @@ else
 	ui_print "  - AOSP ROM detected!"
 	ui_print "    - Enabling native ZRAM writeback"
 
-	mkdir -p /vendor/overlay
-	cp -rf $AK_FOLDER/files_aosp/vendor/overlay/MintZramWb.apk /vendor/overlay/MintZramWb.apk
-	cp -rf $AK_FOLDER/files_aosp/vendor/etc/fstab.zram /vendor/etc/fstab.zram
+	mkdir -p /vendor/overlay 2>/dev/null || true
+	mkdir -p /vendor/etc/init 2>/dev/null || true
+	cp -rf $AK_FOLDER/files_aosp/vendor/overlay/MintZramWb.apk /vendor/overlay/MintZramWb.apk 2>/dev/null || true
+	cp -rf $AK_FOLDER/files_aosp/vendor/etc/fstab.zram /vendor/etc/fstab.zram 2>/dev/null || true
+	cp -rf $AK_FOLDER/files_aosp/vendor/etc/init/init.sovr.rc /vendor/etc/init/init.sovr.rc 2>/dev/null || true
 
-	chmod 644 /vendor/overlay/MintZramWb.apk
-	chmod 644 /vendor/etc/fstab.zram
+	chmod 644 /vendor/overlay/MintZramWb.apk 2>/dev/null || true
+	chmod 644 /vendor/etc/fstab.zram 2>/dev/null || true
+	chmod 644 /vendor/etc/init/init.sovr.rc 2>/dev/null || true
 
 	patch_prop /vendor/build.prop 'ro.zram.mark_idle_delay_mins' '60'
 	patch_prop /vendor/build.prop 'ro.zram.first_wb_delay_mins' '1440'

@@ -66,12 +66,12 @@ on property:sys.boot_completed=1
     write /sys/devices/system/cpu/cpufreq/policy0/schedutil/down_rate_limit_us 4000
     write /sys/devices/system/cpu/cpufreq/policy4/schedutil/up_rate_limit_us 500
     write /sys/devices/system/cpu/cpufreq/policy4/schedutil/down_rate_limit_us 4000
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 500
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 4000
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 500
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 4000
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 0
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 0
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 250
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 2000
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 100
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 2000
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 1
 
     # Storage read-ahead & Multi-Gen LRU
     write /sys/block/sda/queue/scheduler kyber
@@ -90,7 +90,7 @@ on property:sys.boot_completed=1
     write /dev/cpuset/top-app/uclamp.min 25
     write /dev/cpuset/top-app/uclamp.latency_sensitive 1
     write /dev/cpuset/top-app/uclamp.boosted 0
-    write /dev/stune/top-app/schedtune.sched_policy 0
+    write /dev/stune/top-app/schedtune.sched_policy 3
     write /dev/stune/top-app/schedtune.ontime_enabled 1
     write /dev/stune/top-app/schedtune.ntu_ratio 25
     write /dev/stune/top-app/schedtune.tex_enabled 1
@@ -101,7 +101,7 @@ on property:sys.boot_completed=1
     write /dev/cpuset/foreground-boost/uclamp.min 15
     write /dev/cpuset/foreground/uclamp.latency_sensitive 0
     write /dev/cpuset/foreground/uclamp.boosted 0
-    write /dev/stune/foreground/schedtune.sched_policy 0
+    write /dev/stune/foreground/schedtune.sched_policy 1
     write /dev/stune/foreground/schedtune.ontime_enabled 1
     write /dev/stune/foreground/schedtune.ntu_ratio 25
     write /dev/stune/foreground/schedtune.tex_enabled 0
@@ -156,7 +156,7 @@ on property:sys.boot_completed=1 && property:persist.config.chimera.enable=true 
 
     write /proc/sys/kernel/perf_cpu_time_max_percent 10
     write /proc/sys/kernel/sched_child_runs_first 1
-    write /proc/sys/kernel/sched_migration_cost_ns 1000000
+    write /proc/sys/kernel/sched_migration_cost_ns 500000
     write /proc/sys/kernel/sched_latency_ns 5000000
     write /proc/sys/kernel/sched_wakeup_granularity_ns 2500000
     write /proc/sys/kernel/sched_min_granularity_ns 500000
@@ -169,8 +169,8 @@ on property:sys.boot_completed=1 && property:service.camera.running=0 && propert
     write /dev/stune/foreground/schedtune.heavyboost 1
     write /dev/stune/foreground/schedtune.busyboost 3
 
-    write /dev/stune/top-app/schedtune.sched_policy 0
-    write /dev/stune/foreground/schedtune.sched_policy 0
+    write /dev/stune/top-app/schedtune.sched_policy 3
+    write /dev/stune/foreground/schedtune.sched_policy 1
     write /dev/stune/background/schedtune.sched_policy 1
 
     write /dev/cpuset/top-app/uclamp.max max
@@ -187,16 +187,16 @@ on property:sys.boot_completed=1 && property:service.camera.running=0 && propert
 
     write /dev/stune/schedtune.qjump 0
 
-    write /proc/sys/kernel/sched_nr_migrate 16
+    write /proc/sys/kernel/sched_nr_migrate 20
 
     write /sys/devices/system/cpu/cpufreq/policy0/schedutil/iowait_boost_enable 1
-    write /sys/devices/system/cpu/cpufreq/policy4/schedutil/iowait_boost_enable 0
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 0
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 0
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 500
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 4000
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 500
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 4000
+    write /sys/devices/system/cpu/cpufreq/policy4/schedutil/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 250
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 2000
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 100
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 2000
 
 # Gaming
 on property:sys.boot_completed=1 && property:persist.config.chimera.enable=true,CA && property:wlan.p2p.wfdsta=disconnected
@@ -238,7 +238,7 @@ on property:sys.boot_completed=1 && property:service.camera.running=0 && propert
     write /dev/stune/foreground/schedtune.busyboost 5
 
     write /dev/stune/top-app/schedtune.sched_policy 3
-    write /dev/stune/foreground/schedtune.sched_policy 0
+    write /dev/stune/foreground/schedtune.sched_policy 1
     write /dev/stune/background/schedtune.sched_policy 1
 
     write /dev/cpuset/top-app/uclamp.max max
@@ -261,10 +261,10 @@ on property:sys.boot_completed=1 && property:service.camera.running=0 && propert
     write /sys/devices/system/cpu/cpufreq/policy4/schedutil/iowait_boost_enable 1
     write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 1
     write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 1
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 500
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 4000
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 250
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 4000
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 250
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 2000
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 100
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 2000
 
 
 ## Standby Battery Life for Gaming Mode
@@ -295,7 +295,7 @@ on property:sys.boot_completed=1 && property:persist.config.chimera.enable=true,
 
     write /proc/sys/kernel/perf_cpu_time_max_percent 25
     write /proc/sys/kernel/sched_child_runs_first 0
-    write /proc/sys/kernel/sched_migration_cost_ns 1000000
+    write /proc/sys/kernel/sched_migration_cost_ns 500000
     write /proc/sys/kernel/sched_latency_ns 10000000
     write /proc/sys/kernel/sched_wakeup_granularity_ns 5000000
     write /proc/sys/kernel/sched_min_granularity_ns 1000000
@@ -309,7 +309,7 @@ on property:sys.boot_completed=1 && property:service.camera.running=0 && propert
     write /dev/stune/foreground/schedtune.busyboost 5
 
     write /dev/stune/top-app/schedtune.sched_policy 2
-    write /dev/stune/foreground/schedtune.sched_policy 0
+    write /dev/stune/foreground/schedtune.sched_policy 1
     write /dev/stune/background/schedtune.sched_policy 1
 
     write /dev/cpuset/top-app/uclamp.max max
@@ -330,12 +330,12 @@ on property:sys.boot_completed=1 && property:service.camera.running=0 && propert
     
     write /sys/devices/system/cpu/cpufreq/policy0/schedutil/iowait_boost_enable 1
     write /sys/devices/system/cpu/cpufreq/policy4/schedutil/iowait_boost_enable 1
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 0
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 0
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 500
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 4000
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 250
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 4000
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 1
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 250
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 2000
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 100
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 2000
 
 
 ## Performance Settings - Zest
@@ -350,11 +350,11 @@ on property:sys.boot_completed=1 && property:service.camera.running=1 && propert
     write /dev/stune/foreground/schedtune.heavyboost 1
     write /dev/stune/foreground/schedtune.busyboost 3
 
-    write /dev/stune/top-app/schedtune.sched_policy 2
-    write /dev/stune/foreground/schedtune.sched_policy 0
+    write /dev/stune/top-app/schedtune.sched_policy 3
+    write /dev/stune/foreground/schedtune.sched_policy 1
     write /dev/stune/background/schedtune.sched_policy 1
 
-    write /proc/sys/kernel/sched_nr_migrate 16
+    write /proc/sys/kernel/sched_nr_migrate 20
 
     write /dev/cpuset/top-app/uclamp.max max
     write /dev/cpuset/top-app/uclamp.min 40
@@ -374,10 +374,10 @@ on property:sys.boot_completed=1 && property:service.camera.running=1 && propert
     write /sys/devices/system/cpu/cpufreq/policy4/schedutil/iowait_boost_enable 1
     write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 1
     write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 1
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 500
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 4000
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 250
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 4000
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 250
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 2000
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 100
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 2000
 
 
 ## Camera Performance
@@ -416,10 +416,10 @@ on property:sys.boot_completed=1 && property:wlan.p2p.wfdsta=connected
     write /sys/devices/system/cpu/cpufreq/policy4/schedutil/iowait_boost_enable 1
     write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/iowait_boost_enable 1
     write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/iowait_boost_enable 1
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 500
-    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 4000
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 250
-    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 4000
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/up_rate_limit_us 250
+    write /sys/devices/system/cpu/cpufreq/policy0/energy_adaptive/down_rate_limit_us 2000
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/up_rate_limit_us 100
+    write /sys/devices/system/cpu/cpufreq/policy4/energy_adaptive/down_rate_limit_us 2000
 
 
 ## Samsung DeX Performance
