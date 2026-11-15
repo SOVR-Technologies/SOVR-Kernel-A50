@@ -8,76 +8,61 @@
 
 <p align="center">
   <a href="https://github.com/openela/kernel-lts"><img src="https://img.shields.io/badge/Linux-4.14.357--openela_+_ELTS-1f2328.svg?logo=linux" alt="Linux Kernel"></a>
-  <a href="https://github.com/SOVR-Technologies/SOVR-Kernel-A50/releases"><img src="https://img.shields.io/badge/Release-SOVR_v4.1_Final_(Testing)-0969da.svg?logo=github" alt="Release"></a>
+  <a href="https://github.com/SOVR-Technologies/SOVR-Kernel-A50/releases/tag/v4.2"><img src="https://img.shields.io/badge/Release-SOVR_v4.2_Final-0969da.svg?logo=github" alt="Release"></a>
   <a href="https://semiconductor.samsung.com"><img src="https://img.shields.io/badge/SoC-Exynos_9610-1f2328.svg" alt="Target SoC"></a>
-  <a href="https://github.com/Neutron-Toolchains/clang-build-catalogue"><img src="https://img.shields.io/badge/Compiler-Neutron_Clang_24.0.0git_(LLVM_24)-1f2328.svg" alt="Compiler"></a>
+  <a href="https://github.com/ClangBuiltLinux"><img src="https://img.shields.io/badge/Compiler-Clang_23.1.5_(LLVM_23)-1f2328.svg" alt="Compiler"></a>
   <a href="https://github.com/KernelSU-Next/KernelSU-Next"><img src="https://img.shields.io/badge/Root-KernelSU--Next_v3.4.2-1f2328.svg" alt="Root"></a>
   <a href="https://gitlab.com/simonpunk/susfs4ksu"><img src="https://img.shields.io/badge/Security-SuSFS_v1.5.5-1f2328.svg" alt="SuSFS"></a>
   <a href="https://docs.kernel.org/admin-guide/mm/multigen_lru.html"><img src="https://img.shields.io/badge/MM-Multi--Gen_LRU-1f2328.svg" alt="MGLRU"></a>
-  <img src="https://img.shields.io/badge/ZRAM-ZSTD_Multi--Stream_(~7:1)-1f2328.svg" alt="ZRAM">
-  <img src="https://img.shields.io/badge/TCP-Google_BBR-1f2328.svg" alt="TCP BBR">
+  <img src="https://img.shields.io/badge/ZRAM-ZSTD_Multi--Stream-1f2328.svg" alt="ZRAM">
+  <img src="https://img.shields.io/badge/Net-fq__codel_+_Google_BBR-1f2328.svg" alt="TCP BBR">
+  <img src="https://img.shields.io/badge/SELinux-Enforcing_(All_Builds)-0969da.svg" alt="SELinux Enforcing">
   <img src="https://img.shields.io/badge/VINTF-FCM_Compliant_(0_errors)-0969da.svg" alt="VINTF">
 </p>
 
 ---
 
 > [!IMPORTANT]
-> ### 📢 Release Status & Community Testing Rings (v4.1 Final)
-> * **One UI 6+ (Android 14) — 1000% Verified Stable:** The One UI 6 release packages (`SOVR-Kernel-v4.1.A14_OneUI6_A50_KSU.zip` and non-root) have undergone comprehensive physical hardware validation on real Galaxy A50 devices and are verified for rock-solid daily driver stability with zero panics, full NetBpfLoad compliance, and low thermal footprint.
-> * **One UI 4, One UI 3 & AOSP — Community BETA:** Builds outside of One UI 6 are designated with the `-BETA` suffix (`SOVR-Kernel-v4.1-BETA...`) as community testing candidates. Initial boot stability is not 100% guaranteed across every sub-variant until reported by community testers. Once stability is validated, these ZIP packages will be updated directly within this v4.1 release, dropping the `-BETA` tag.
-> * **Community Testers Needed:** Help test and report feedback for:
->   * 🚀 **AOSP & GSIs:** Android 12, 13, 14, and 15 custom ROMs and Generic System Images.
->   * 🔮 **Legacy One UI:** One UI 3.1 (Android 11) and One UI 4.1 / 5 (Android 12/13).
->   * 🌌 **Next-Gen Ports:** Upcoming One UI 8.5 experimental ports.
+> ### 📢 Release Status & Community Testing Rings (v4.2 Final)
+> * **One UI 6+ (Android 14) — Verified Daily Driver:** `SOVR-Kernel-v4.2.A14_OneUI6_A50_KSU.zip` and `SOVR-Kernel-v4.2.A14_OneUI6_A50.zip` are hardware-validated on real Galaxy A50 hardware under strict **SELinux Enforcing**, with full VINTF compliance (`CONFIG_SCHED_DEBUG=y` + `CONFIG_AUDIT=y`), clean `NetBpfLoad` startup, `0` crashes, and low idle power draw (`702 MHz` LITTLE / `1040 MHz` BIG).
+> * **One UI 4, One UI 3 & AOSP — Community BETA:** Builds outside One UI 6 carry the `-BETA` tag (`SOVR-Kernel-v4.2-BETA...`) while community feedback across every third-party ROM/GSI is gathered. All 8 release ZIPs ship **SELinux Enforcing** with strictly isolated per-target AnyKernel3 staging and target-matched Mali DDK (`R26P0` for A11, `R32P1` for A12, `R38P1` for A14).
+> * **Community Testers Needed:** Share logs (`dmesg` / `last_kmsg` / `logcat`) and feedback for:
+>   * 🚀 **AOSP & GSIs:** Android 12+ custom ROMs and Generic System Images (`init.sovr.rc` + `wlan1` + `R32P1`).
+>   * 🔮 **Legacy One UI:** One UI 3.1 (Android 11) and One UI 4.1 (Android 12).
 >
-> Report test results and share logs on [GitHub Issues](https://github.com/SOVR-Technologies/SOVR-Kernel-A50/issues) or [XDA Forums](https://xdaforums.com/t/kernel-a505-4-14-357-sovr-kernel-v4-0-oneui-4-1-6-1-tested-a11-a16-anykernel3-ksu-next.4803872/)!
+> Report feedback on [GitHub Issues](https://github.com/SOVR-Technologies/SOVR-Kernel-A50/issues) or [XDA Forums](https://xdaforums.com/t/kernel-a505-4-14-357-sovr-kernel-v4-0-oneui-4-1-6-1-tested-a11-a16-anykernel3-ksu-next.4803872/).
 
 ---
 
 ## Overview
 
-**SOVR Kernel** is a high-performance, security-hardened Linux kernel engineered for the **Samsung Galaxy A50** (`SM-A505F/FN/G/N`, Exynos 9610).
+**SOVR Kernel** is a performance-tuned, security-hardened Linux kernel built specifically for the **Samsung Galaxy A50** (`SM-A505F/FN/G/GN/N`, Exynos 9610).
 
-Built upon **OpenELA Enterprise Linux LTS (4.14.357)** augmented with rolling **Enterprise LTS (ELTS)** backports synchronized through upstream Linux 4.19.324, SOVR v4.1 unlocks the full silicon potential of the SoC. Compiled with the cutting-edge **Neutron Clang 24.0.0git (LLVM 24)** toolchain with ThinLTO, LLD safe ICF, and custom `-O3` pipeline vectorization, it integrates kernel-level stealth via **SuSFS v1.5.5**, in-tree **KernelSU-Next v3.4.2**, backported **EROFS**, **Multi-Gen LRU (MGLRU)**, and low-latency networking.
-
-Starting with **v4.1 Final**, SOVR introduces **Dynamic Universal AnyKernel3 Installers** providing seamless, automated platform detection across **Samsung One UI 3.1 (Android 11)**, **One UI 4/5 (Android 12/13)**, **One UI 6+ (Android 14 / Fresh 6)**, and **Generic System Images (AOSP Android 12+)**.
+Built on **OpenELA Enterprise Linux LTS (`4.14.357`)** with rolling **ELTS** backports synchronized through upstream Linux `4.19.324`, SOVR **v4.2** is compiled with **Clang 23.1.5** (`ClangBuiltLinux LLVM 23`) + `ThinLTO` + `LLD` safe ICF + `-O3` tuned specifically for the Exynos 9610 big cluster (`-march=armv8-a+crypto+crc+sha2+aes -mtune=cortex-a73 -mcpu=cortex-a73+crypto+crc+sha2+aes`). It integrates **KernelSU-Next v3.4.2**, **SuSFS v1.5.5**, native **EROFS** with per-CPU high-priority decompression kthreads, **Multi-Gen LRU (MGLRU)**, **ZSTD ZRAM**, and **fq_codel + Google BBR** networking.
 
 ---
 
-## Architectural Highlights
+## Key Highlights & Changes in v4.2
 
-### ⚡ Silicon Unlock & Compiler Optimization
-* **Neutron Clang 24.0.0git (LLVM 24):** Transitioned to bleed-edge LLVM compiler infrastructure featuring ThinLTO (Thin Link-Time Optimization), LLD safe ICF (`--icf=safe`), and auto-vectorization tuned specifically for Cortex-A73 out-of-order execution pipelines.
-* **ARMv8 Hardware Cryptography:** Full silicon offloading (`aes`, `pmull`, `sha1`, `sha2`, `crc32`, and `chacha20-neon`). Android File-Based Encryption (fscrypt / FBE), dm-crypt, and TLS packet hashing execute directly on hardware units.
-* **SCSC Wi-Fi Acceleration & Dual MAC Fallback:** NAPI ring-buffer polling, Generic Receive Offload (GRO), and Low Latency mode on Maxwell Wi-Fi. In v4.1, `scsc/mgt.c` includes automated dual MAC address fallback to `/efs/wifi/.mac.info`, resolving Wi-Fi activation failure on pure AOSP/GSIs.
-* **LPDDR4x & System Bus QoS Boost:** Enforces 1.35 GHz on the LPDDR4x Memory Interface (MIF) and 667 MHz on the Internal Bus (INT) during boot, touch events, and intensive workloads.
+### ⚡ Compiler, CPU Scheduling & Responsiveness
+* **Cortex-A73 Pipeline Compilation (`LLVM 23.1.5` + `-O3` + ThinLTO):** Built with `-mtune=cortex-a73 -mcpu=cortex-a73+crypto+crc+sha2+aes` for out-of-order big-cluster throughput alongside full ARMv8 hardware crypto (`AES`, `PMULL`, `SHA1/SHA2`, `CRC32`, `ChaCha20-NEON`).
+* **EMS + Energy Adaptive Tuning:** Interactive/UI workloads (`CGROUP_TOPAPP`) map cleanly to `SCHED_POLICY_PERF` while background groups stay on `SCHED_POLICY_EFF`; `aigo` runs with `+31.25%` headroom and `iowait_boost_enable=true`, `migration_cost=500000`, and `energy_adaptive` rates tuned to `100 µs` (BIG) / `250 µs` (LITTLE) up and `2000 µs` down.
+* **OPP-Aligned Input Booster (`drivers/input/input.c`):** Press (`head`) and fling/release (`tail`) floors aligned to native Exynos 9610 OPPs (`1.664 GHz` A73 / `1.222 GHz` A53 / `1.014 GHz` MIF / `533 MHz` INT on head) with zero idle impact.
+* **In-Kernel Boot Booster (`sovr_boot_booster`):** Non-KSU EROFS builds now use a `30s` fallback timeout (`50s` for KSU) before cleanly restoring runtime VM (`swappiness=140/60`, `dirty=15/5`, `vfs_cache_pressure=60`) and scheduler defaults.
 
-### 📁 File Systems & Storage Architecture
-* **Native EROFS Backport:** In-kernel Enhanced Read-Only File System with ARMv8 NEON assembly decompression (`lz4armv8.S`), SELinux xattrs, and POSIX ACL support for modern Android 13/14 system images.
-* **F2FS Modernization:** Rapid Garbage Collection, enhanced checkpointing, and reduced write amplification for flash endurance.
-* **Dynamic Fsync 2.0:** Suspends synchronous storage flushes while the screen is active, flushing deferred writes when the display sleeps.
-* **Anxiety & Kyber I/O Elevators:** Low-latency storage schedulers tuned for UFS 2.1 flash memory.
-* **Native OverlayFS:** In-tree support for systemless overlays and module mounts.
+### 🛡️ Hardening, Security & Mainline CVE Backports
+* **Strict SELinux Enforcing Matrix:** All 8 v4.2 packages (both One UI and AOSP) ship in strict **SELinux Enforcing** mode.
+* **Kernel Hardening:** Enabled `CONFIG_BPF_UNPRIV_DEFAULT_OFF=y`, `CONFIG_DEFAULT_MMAP_MIN_ADDR=32768`, `CONFIG_ARCH_MMAP_RND_BITS=24` (`COMPAT=16`), `CONFIG_SCHED_STACK_END_CHECK=y`, and `CONFIG_DEBUG_LIST=y`.
+* **Mainline CVE Backports:**
+  * `CVE-2024-50302` (`drivers/hid/hid-core.c`): zero-initialize HID report buffer via `kzalloc()` to prevent uninitialized kernel memory disclosure.
+  * `CVE-2024-53104` (`drivers/media/usb/uvc/uvc_driver.c`): validate UVC frame descriptor bounds cleanly in `uvc_parse_format()`.
+  * `CVE-2024-53197` (`sound/usb/quirks.c`): validate `bNumConfigurations` against USB host descriptors on Sound Blaster Extigy / Mbox 2 boot quirks.
 
-### 🛡️ Kernel-Level Stealth & Enterprise Security
-* **SuSFS v1.5.5 Subsystem:** Kernel VFS stealth layer resolving modern detection vectors (including Native Detector Mount Gap 43 and Momo).
-* **Knox RKP Compatibility:** Adapted mount traversal for Samsung Real-time Kernel Protection (`CONFIG_RKP_NS_PROT`), preventing kernel panics.
-* **Per-UID SAR Partition Protection:** Preserves physical mount points (`/vendor`, `/system`, `/product`) during per-UID unmount routines, ensuring graphics HAL stability.
-* **SELinux Enforcing Mode & Auto-Permissive for GSIs:** Fully compliant with Android Enforcing policies on One UI while offering automated permissive fallback (`CONFIG_ALWAYS_PERMIT=y`) on AOSP GSI builds.
-* **KernelSU-Next v3.4.2:** In-tree manual hooks (`CONFIG_KSU_MANUAL_HOOK=y`) supporting UAPI v5, native module blacklists, and ADB-only shell root.
-
-### 🧠 Memory Management & Interactive Responsiveness
-* **Multi-Gen LRU (MGLRU):** Backported 12-patch series replacing the legacy 2-list LRU algorithm. Employs multi-generational page tracking to cut memory thrashing and background app redraws.
-* **ZRAM with Zstandard (ZSTD):** Multi-stream swap compression engine achieving an average **~5.5:1 to 7:1** physical compression ratio, reclaiming over 800 MB of physical RAM under heavy multi-tasking without memory thrashing.
-* **Overhauled Touch Booster:** Floor frequencies elevated to 1.66 GHz (A73) and 1.14 GHz (A53) with 250 ms active / 200 ms tail hold and 500 µs migration cost for fluid 60 FPS scrolling and instantaneous app transitions.
-* **Accelerated Energy Adaptive Governor:** 100 µs (BIG) and 250 µs (LITTLE) ramp-up limits with 2000 µs down-scaling for smooth UI delivery.
-
-### 🔧 Exynos 9610 Platform Fixes & VINTF Compliance
-* **Infinite Suspend Loop Elimination:** Patched `exynos-acme` cpufreq driver to enforce bounded retries when dropping frequencies during suspend, eliminating kernel freezes during deep sleep transitions.
-* **Decoupled Devfreq Bus Scaling:** Removed hardcoded CPU0 thread and timer affinity (`BOUND_CPU_NUM=0`) in `governor_simpleinteractive.c`, allowing memory bus frequency scaling to execute across any available CPU core without stalling during app launches.
-* **Asynchronous TrustZone/TZDEV Init:** Converted `startup.tzar` deployment to non-blocking asynchronous execution, eliminating race conditions and SCSI RPMB deadlocks on boot.
-* **VINTF Framework Compliance:** Fully satisfies Android Framework Compatibility Matrix (FCM) requirements (`CONFIG_AUDIT=y`, `CONFIG_SCHED_DEBUG=y`, `CONFIG_USB_RTL8152=y`), eliminating Samsung system error popups and achieving **0 checkvintf errors**.
-* **BPF Subsystem Stability:** Clean, native BPF loader execution without artificial uname spoofing, ensuring flawless `NetBpfLoad` initialization across Android 14+ without BTF mismatch crashes.
+### 📦 Per-Build Ecosystem Isolation & Storage / Network Modernization
+* **Clean Target-Isolated Staging (`build.sh` / `mint.sh`):** Each ZIP includes only its target init scripts, DTBs, and Mali Bifrost DDK (`R26P0` for A11, `R32P1` restored for A12 One UI 4 & AOSP, `R38P1` for A14 One UI 6). One UI 6+ skips legacy `/system` copies cleanly for pure EROFS compatibility; AOSP ships dedicated `init.sovr.rc` EAS/network/VM alignment.
+* **EROFS & Flash Storage:** Native EROFS with `CONFIG_EROFS_FS_PCPU_KTHREAD=y` & `CONFIG_EROFS_FS_PCPU_KTHREAD_HIPRI=y`, F2FS GC improvements, Dynamic Fsync 2.0, and **Anxiety** (default) alongside `CFQ` (+ `CFQ_GROUP_IOSCHED`), `FIOPS`, `SIO`, `ZEN`, `Deadline`, `NOOP`, `MQ-Deadline`, and `Kyber`.
+* **Low-Latency Networking & USB Gadget:** Default packet scheduler switched to **`fq_codel`** (`CONFIG_DEFAULT_FQ_CODEL=y`, with `CONFIG_NET_SCH_CAKE=y` retained) paired with **Google BBR**, WireGuard v1.0.0, SCSC Wi-Fi NAPI/GRO + Dual MAC fallback, and restored USB ADB gadget mode (`CONFIG_USB_USBNET` disabled).
+* **VINTF & Hardware Reliability:** `CONFIG_SCHED_DEBUG=y` and `CONFIG_AUDIT=y` preserved for Android 14 FCM (`0` checkvintf errors), non-NFC `startup_old.tzar` fallback in TZDEV, bounded `exynos-acme` suspend retries, and decoupled devfreq MIF bus scaling.
 
 ---
 
@@ -85,99 +70,80 @@ Starting with **v4.1 Final**, SOVR introduces **Dynamic Universal AnyKernel3 Ins
 
 | Parameter | Specification |
 | :--- | :--- |
-| **Linux Baseline** | 4.14.357-openela (LTS) + ELTS Rolling Backports (sync v4.19.324) |
-| **Target Device** | Samsung Galaxy A50 (`SM-A505F`, `SM-A505FN`, `SM-A505G`, `SM-A505N`) |
-| **SoC Architecture** | Samsung Exynos 9610 (10nm FinFET) |
-| **CPU Configuration** | 4x Cortex-A73 @ 2.31 GHz + 4x Cortex-A53 @ 1.74 GHz (ARMv8.0-A) |
-| **GPU** | ARM Mali-G72 MP3 (Bifrost R32P0 / R38P1 DDK) |
-| **Toolchain** | Neutron Clang 24.0.0git (`LLVM 24.0.0git`) + LLD 24.0.0 + ThinLTO |
-| **Optimization Target** | `-march=armv8-a+crypto+crc+sha2+aes -mtune=cortex-a73 -O3` |
+| **Linux Baseline** | `4.14.357-openela` (LTS) + ELTS Backports (sync `4.19.324`) |
+| **Target Device** | Samsung Galaxy A50 (`SM-A505F`, `SM-A505FN`, `SM-A505G`, `SM-A505GN`, `SM-A505N`) |
+| **SoC Architecture** | Samsung Exynos 9610 (10 nm) — 4x Cortex-A73 @ 2.31 GHz + 4x Cortex-A53 @ 1.74 GHz |
+| **GPU Driver** | ARM Mali-G72 MP3 (Bifrost `R26P0` on A11 / `R32P1` on A12 / `R38P1` on A14) |
+| **Toolchain** | ClangBuiltLinux `clang 23.1.5` (`LLVM 23`) + `lld 23.1.5` + `ThinLTO` |
+| **Optimization Target** | `-march=armv8-a+crypto+crc+sha2+aes -mtune=cortex-a73 -mcpu=cortex-a73+crypto+crc+sha2+aes -O3` |
 | **Kernel Preemption** | `CONFIG_PREEMPT=y` |
-| **Root Subsystem** | KernelSU-Next v3.4.2 (UAPI v5, Code 33355) |
-| **VFS Hiding** | SuSFS v1.5.5 non-GKI |
-| **SELinux Mode** | Enforcing (One UI) / Permissive (AOSP GSI) |
-| **VINTF Status** | Fully Compliant (0 errors across FCM requirements) |
+| **Root & Stealth** | KernelSU-Next v3.4.2 (Code `33355`, UAPI v5) + SuSFS v1.5.5 non-GKI |
+| **SELinux Mode** | Strict **Enforcing** across all 8 release builds |
+| **Network Qdisc / TCP** | `fq_codel` (default) + Google BBR |
+| **VINTF Status** | Compliant (`CONFIG_SCHED_DEBUG=y`, `CONFIG_AUDIT=y`, `0` FCM errors) |
 
 ---
 
-## Ecosystem Variants & Downloads
+## Release Matrix (`v4.2` — 8 Enforcing Packages)
 
-Releases will be published under [GitHub Releases](https://github.com/SOVR-Technologies/SOVR-Kernel-A50/releases) once 1000% validation completes:
+Available under [GitHub Releases (`v4.2`)](https://github.com/SOVR-Technologies/SOVR-Kernel-A50/releases/tag/v4.2):
 
-### Universal Installers (v4.1 Final)
-* **`SOVR-Kernel-v4.1.OneUI_A50_KSU.zip`**
-  * Automatically detects and injects the verified kernel and DTB for:
-    * **One UI 6.x** (Android 14 / Fresh 6)
-    * **One UI 4.x & 5.x** (Android 12/13 / Fresh 4/5)
-    * **One UI 3.1** (Android 11 / Stock Samsung)
-* **`SOVR-Kernel-v4.1.AOSP_A50_KSU.zip`**
-  * Tailored for **Generic System Images (GSIs)** and AOSP Android 12+ (LineageOS, Pixel Experience, CrDroid) with legacy DTB, dual MAC fallback, and BPF 5.4.186 compatibility.
-
-### 🧪 Upcoming Test Rings (Testers Needed)
-* **AOSP / GSI Matrix Ring:** Dedicated testing ring for pure AOSP builds, custom device trees, and bleeding-edge GSIs.
-* **One UI 8.5 Port Ring:** Testing ring for prospective next-generation One UI ports on the Galaxy A50.
+| Ecosystem | Target Android | Root Variant | File Name |
+| :--- | :--- | :--- | :--- |
+| **One UI 6+** | Android 14 (Fresh 6 / EROFS) | **KernelSU-Next + SuSFS** | `SOVR-Kernel-v4.2.A14_OneUI6_A50_KSU.zip` |
+| **One UI 6+** | Android 14 (Fresh 6 / EROFS) | Rootless / Magisk | `SOVR-Kernel-v4.2.A14_OneUI6_A50.zip` |
+| **One UI 4** | Android 12 (Fresh 4 / Stock) | **KernelSU-Next + SuSFS** | `SOVR-Kernel-v4.2-BETA.A12_OneUI4_A50_KSU.zip` |
+| **One UI 4** | Android 12 (Fresh 4 / Stock) | Rootless / Magisk | `SOVR-Kernel-v4.2-BETA.A12_OneUI4_A50.zip` |
+| **AOSP / GSI** | Android 12+ | **KernelSU-Next + SuSFS** | `SOVR-Kernel-v4.2-BETA.A12_AOSP_A50_KSU.zip` |
+| **AOSP / GSI** | Android 12+ | Rootless / Magisk | `SOVR-Kernel-v4.2-BETA.A12_AOSP_A50.zip` |
+| **One UI 3** | Android 11 (Stock Samsung) | **KernelSU-Next + SuSFS** | `SOVR-Kernel-v4.2-BETA.A11_OneUI3_A50_KSU.zip` |
+| **One UI 3** | Android 11 (Stock Samsung) | Rootless / Magisk | `SOVR-Kernel-v4.2-BETA.A11_OneUI3_A50.zip` |
 
 ---
 
 ## Installation
 
-### Prerequisites
-* Unlocked bootloader on Samsung Galaxy A50 (`SM-A505F/FN/G/N`).
-* Custom recovery installed (**TWRP** or **OrangeFox**).
-
-### Flashing Procedure
-1. Download the Universal AnyKernel3 ZIP matching your ecosystem (`OneUI_Universal` or `AOSP_Universal`) from [GitHub Releases](https://github.com/SOVR-Technologies/SOVR-Kernel-A50/releases).
-2. Transfer the ZIP to device storage, MicroSD card, or USB OTG drive.
-3. Reboot into **Recovery mode**.
-4. In recovery, select **Install**, choose the SOVR Kernel ZIP, and swipe to flash. AnyKernel3 will automatically identify your installed OS and flash the correct kernel and device tree.
-5. (Recommended) Wipe Dalvik / ART Cache.
-6. Reboot to **System**.
-7. Install the latest **KernelSU-Next Manager APK** to configure root permissions and SuSFS modules.
+1. Ensure your Samsung Galaxy A50 (`SM-A505x`) has an unlocked bootloader and **TWRP** / **OrangeFox** recovery installed.
+2. Back up your current `boot` image before flashing.
+3. Flash the exact ZIP matching your ROM (`OneUI6`, `OneUI4`, `OneUI3`, or `AOSP`) and root choice (`_KSU` vs standard rootless).
+4. Wipe Dalvik / ART Cache *(optional)* and reboot to **System**.
+5. For `_KSU` packages, install the **KernelSU-Next Manager APK**.
 
 ---
 
 ## Building from Source
 
-### Build Environment
-* Host OS: Ubuntu 22.04 LTS (Native or WSL2)
-* Compiler: Neutron Clang 24.0.0git (`$HOME/toolchains/neutron-clang`)
-* Linker: LLVM LLD 24.0.0
-
-### Compilation Commands
-
 ```bash
-# Clone the repository
 git clone https://github.com/SOVR-Technologies/SOVR-Kernel-A50.git
 cd SOVR-Kernel-A50
 
-# Compile for Samsung One UI 6+ (Android 14) with KernelSU-Next
-./build.sh -d a50 -a 14 -v oneui -k
-
-# Compile for Samsung One UI 4 (Android 12) with KernelSU-Next
-./build.sh -d a50 -a 12 -v oneui -k
-
-# Compile for Samsung One UI 3 (Android 11) with KernelSU-Next
-./build.sh -d a50 -a 11 -v oneui -k
-
-# Compile for Generic System Images (AOSP)
-./build.sh -d a50 -a 12 -v aosp -k
+# Toolchain expected at $HOME/toolchains/neutron-clang (Clang 23.1.5 / LLVM 23)
+./build.sh -d a50 -a 14 -v oneui -k   # One UI 6+ (A14) KSU
+./build.sh -d a50 -a 14 -v oneui      # One UI 6+ (A14) Non-KSU
+./build.sh -d a50 -a 12 -v oneui -k   # One UI 4  (A12) KSU
+./build.sh -d a50 -a 12 -v oneui      # One UI 4  (A12) Non-KSU
+./build.sh -d a50 -a 12 -v aosp -k    # AOSP GSI  (A12+) KSU
+./build.sh -d a50 -a 12 -v aosp       # AOSP GSI  (A12+) Non-KSU
+./build.sh -d a50 -a 11 -v oneui -k   # One UI 3  (A11) KSU
+./build.sh -d a50 -a 11 -v oneui      # One UI 3  (A11) Non-KSU
 ```
 
 ---
 
 ## Credits & Upstream Attribution
 
-* **Linux Kernel Community & OpenELA:** For extended enterprise maintenance of the Linux 4.14 kernel branch.
-* **Neutron Toolchains Team (Dakkshesh):** For the cutting-edge Neutron Clang LLVM compiler suite.
-* **Samsung Open Source Release Center (OSRC):** For base hardware source code and platform definitions.
-* **The Fresh Project (TenSeventy7 & PeterKnecht93):** For Exynos 9610 platform research and ROM ecosystem support.
-* **KernelSU Team (tiann) & KernelSU-Next (rifsxd):** For kernel-assisted superuser infrastructure.
-* **SuSFS Project (simonpunk):** For advanced kernel VFS stealth implementation.
-* **EROFS Community (Gao Xiang):** For the Enhanced Read-Only File System.
-* **cat658011 & Tim Zimmermann:** For valuable Exynos 9610 platform fixes and BPF compatibility backports.
+* **Linux Kernel Community & OpenELA:** Extended enterprise maintenance of Linux `4.14`.
+* **ClangBuiltLinux / LLVM Project:** Modern ARM64 Clang/LLD compiler infrastructure.
+* **Samsung Open Source Release Center (OSRC):** Exynos 9610 base source and platform definitions.
+* **The Fresh Project (TenSeventy7 & PeterKnecht93):** Exynos 9610 Mint kernel base and platform research.
+* **KernelSU Team (tiann) & KernelSU-Next (rifsxd):** In-tree kernel superuser support.
+* **SuSFS Project (simonpunk):** Non-GKI VFS hiding subsystem.
+* **Gao Xiang & Linux EROFS Community:** Enhanced Read-Only File System.
+* **osm0sis:** AnyKernel3 flasher framework.
+* **cat658011, Tim Zimmermann, Lord Boeffla & flar2:** Platform fixes, BPF backports, and audio controls.
 
 ---
 
 ## License
 
-This project is licensed under the **GNU General Public License v2.0 (GPL-2.0)**. See [COPYING](COPYING) for full details.
+Licensed under the **GNU General Public License v2.0 (GPL-2.0)**. See [COPYING](COPYING).
