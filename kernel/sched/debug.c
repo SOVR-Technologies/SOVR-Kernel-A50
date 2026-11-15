@@ -18,6 +18,7 @@
 #include <linux/utsname.h>
 #include <linux/mempolicy.h>
 #include <linux/debugfs.h>
+#include <linux/nmi.h>
 
 #include "sched.h"
 
@@ -872,6 +873,8 @@ void proc_sched_show_task(struct task_struct *p, struct pid_namespace *ns,
 	SEQ_printf(m, "%-45s:%21Ld\n", #F, (long long)F)
 #define P(F) \
 	SEQ_printf(m, "%-45s:%21Ld\n", #F, (long long)p->F)
+#define __PS(S, F) \
+	SEQ_printf(m, "%-45s:%21Ld\n", S, (long long)F)
 #define P_SCHEDSTAT(F) \
 	SEQ_printf(m, "%-45s:%21Ld\n", #F, (long long)schedstat_val(p->F))
 #define __PN(F) \
@@ -972,6 +975,7 @@ void proc_sched_show_task(struct task_struct *p, struct pid_namespace *ns,
 #undef P_SCHEDSTAT
 #undef P
 #undef __P
+#undef __PS
 
 	{
 		unsigned int this_cpu = raw_smp_processor_id();

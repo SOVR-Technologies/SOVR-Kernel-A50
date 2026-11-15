@@ -408,8 +408,8 @@ void aigov_get_target_util(unsigned long *util, unsigned long *max, int cpu)
    	/* boost util with schedtune */
    	pelt_util += schedtune_cpu_margin(pelt_util, cpu);
 
-	/* get tipping point of util (+25% headroom for energy-efficient video/idle) */
-	pelt_util = pelt_util + (pelt_util >> 2);
+	/* get tipping point of util (+31.25% headroom: smooth UI transients, lean video decode) */
+	pelt_util = pelt_util + (pelt_util >> 2) + (pelt_util >> 4);
 	pelt_util = min(pelt_util, max_cap);
 	pelt_max = max_cap;
 
@@ -955,7 +955,7 @@ tunables_init:
 	}
 
 	ag_policy->be_stochastic = false;
-	tunables->iowait_boost_enable = policy->iowait_boost_enable;
+	tunables->iowait_boost_enable = true;
 
 	policy->governor_data = ag_policy;
 	ag_policy->tunables = tunables;

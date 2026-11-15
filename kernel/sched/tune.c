@@ -804,8 +804,8 @@ schedtune_set_default_values(struct cgroup_subsys_state *css)
 	int i;
 	static struct stune_param tgts[] = {
 		/* cgroup            l-b h-b b-b e-p e-o  e-n e-t e-g */
-		{"top-app",	           1,  3,  5,  0,  1,  25,  1,  1 },
-		{"foreground",	       0,  1,  3,  0,  1,  25,  0,  0 },
+		{"top-app",	           1,  3,  5,  3,  1,  25,  1,  1 },
+		{"foreground",	       0,  1,  3,  1,  1,  25,  0,  0 },
 		{"background",	       0,  0,  1,  1,  0,   5,  0,  0 },
 		{"rt",		           3,  5,  7,  2,  0,   5,  0,  0 },
 		{"camera-daemon",	   3,  7,  7,  3,  0,  25,  0,  0 },

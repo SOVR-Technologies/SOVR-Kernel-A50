@@ -773,19 +773,47 @@ void input_booster_init(void)
 					printk("Failed to get [%d] param table property\n", i);
 				}
 
-				/* SOVR Balanced Touch Booster:
-				 * Only raise the initial touch/multitouch head phase onto efficient
-				 * Exynos 9610 OPP steps (1.352 GHz A73 / 910 MHz A53) while preserving
-				 * stock DT head/tail durations and bus clocks for keys and idle playback.
+				/* SOVR Exynos 9610 Input Booster (OPP-aligned head + fling/release tail):
+				 * Fires strictly on active user input (zero impact during idle/video playback)
+				 * while ensuring both press (head) and fling/back transitions (tail) do not
+				 * drop to 936 MHz / 0 MIF bus starvation.
 				 */
-				if ((dt_infor->type == 2 || dt_infor->type == 3) &&
-				    dt_infor->param_tables[i].head_time > 0) {
+				if (dt_infor->type >= 1 && dt_infor->type <= 4) {
+					if (dt_infor->param_tables[i].head_time > 0) {
+						if (dt_infor->param_tables[i].cpu_freq < 1664000)
+							dt_infor->param_tables[i].cpu_freq = 1664000;
+						if (dt_infor->param_tables[i].kfc_freq < 1222000)
+							dt_infor->param_tables[i].kfc_freq = 1222000;
+						if (dt_infor->param_tables[i].mif_freq < 1014000)
+							dt_infor->param_tables[i].mif_freq = 1014000;
+						if (dt_infor->param_tables[i].int_freq < 533000)
+							dt_infor->param_tables[i].int_freq = 533000;
+						if ((dt_infor->type == 2 || dt_infor->type == 4) &&
+						    dt_infor->param_tables[i].head_time < 180)
+							dt_infor->param_tables[i].head_time = 180;
+					} else if (dt_infor->param_tables[i].tail_time > 0) {
+						u32 tail_cpu = (dt_infor->type == 1) ? 1664000 : 1508000;
+						u32 tail_kfc = (dt_infor->type == 1) ? 1222000 : 1053000;
+						u32 tail_mif = (dt_infor->type == 1) ? 1014000 : 845000;
+						u32 tail_int = (dt_infor->type == 1) ? 533000 : 400000;
+
+						if (dt_infor->param_tables[i].cpu_freq < tail_cpu)
+							dt_infor->param_tables[i].cpu_freq = tail_cpu;
+						if (dt_infor->param_tables[i].kfc_freq < tail_kfc)
+							dt_infor->param_tables[i].kfc_freq = tail_kfc;
+						if (dt_infor->param_tables[i].mif_freq < tail_mif)
+							dt_infor->param_tables[i].mif_freq = tail_mif;
+						if (dt_infor->param_tables[i].int_freq < tail_int)
+							dt_infor->param_tables[i].int_freq = tail_int;
+					}
+				} else if (dt_infor->type == 0) {
 					if (dt_infor->param_tables[i].cpu_freq > 0 &&
 					    dt_infor->param_tables[i].cpu_freq < 1352000)
 						dt_infor->param_tables[i].cpu_freq = 1352000;
-					if (dt_infor->param_tables[i].kfc_freq > 0 &&
-					    dt_infor->param_tables[i].kfc_freq < 910000)
+					if (dt_infor->param_tables[i].kfc_freq < 910000)
 						dt_infor->param_tables[i].kfc_freq = 910000;
+					if (dt_infor->param_tables[i].mif_freq < 845000)
+						dt_infor->param_tables[i].mif_freq = 845000;
 				}
 
 				printk("[Input Booster] Level %d : frequency[%d,%d,%d,%d] hmp_boost[%d] dma_latency[%d] times[%d,%d,%d]\n", i,

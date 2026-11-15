@@ -281,7 +281,12 @@ int __init tex_init(void)
 /******************************************************************************
  * sched policy                                                               *
  ******************************************************************************/
-static int sched_policy[CGROUP_COUNT] = {SCHED_POLICY_ENERGY, };
+static int sched_policy[CGROUP_COUNT] = {
+	[0 ... CGROUP_COUNT - 1]	= SCHED_POLICY_ENERGY,
+	[CGROUP_BACKGROUND]		= SCHED_POLICY_EFF,
+	[CGROUP_SYSTEM_BACKGROUND]	= SCHED_POLICY_EFF,
+	[CGROUP_TOPAPP]			= SCHED_POLICY_PERF,
+};
 static char *sched_policy_name[] = {
     "SCHED_POLICY_EFF",
     "SCHED_POLICY_ENERGY",
@@ -332,6 +337,12 @@ int sched_policy_get(struct task_struct *p)
 	 */
 	if (p->flags & PF_WQ_WORKER)
 		return SCHED_POLICY_ENERGY;
+
+	/* Keep interactive foreground UI/renderer threads (CGROUP_TOPAPP)
+	 * under SCHED_POLICY_PERF regardless of userspace schedtune defaults.
+	 */
+	if (cgroup_idx == CGROUP_TOPAPP)
+		return SCHED_POLICY_PERF;
 
 	if (policy == SCHED_POLICY_EFF &&
 		ml_task_util(p) <= SCHED_CAPACITY_SCALE >> 6)
