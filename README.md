@@ -18,6 +18,7 @@
   <img src="https://img.shields.io/badge/Net-fq__codel_+_Google_BBR-1f2328.svg" alt="TCP BBR">
   <img src="https://img.shields.io/badge/SELinux-Enforcing_(All_Builds)-0969da.svg" alt="SELinux Enforcing">
   <img src="https://img.shields.io/badge/VINTF-FCM_Compliant_(0_errors)-0969da.svg" alt="VINTF">
+  <a href="https://github.com/sponsors/ruuiii-tk"><img src="https://img.shields.io/badge/Sponsor-GitHub_Sponsors-ea4aaa.svg?logo=githubsponsors&logoColor=white" alt="GitHub Sponsors"></a>
 </p>
 
 ---
@@ -30,7 +31,7 @@
 >   * 🚀 **AOSP & GSIs:** Android 12+ custom ROMs and Generic System Images (`init.sovr.rc` + `wlan1` + `R32P1`).
 >   * 🔮 **Legacy One UI:** One UI 3.1 (Android 11) and One UI 4.1 (Android 12).
 >
-> Report feedback on [GitHub Issues](https://github.com/SOVR-Technologies/SOVR-Kernel-A50/issues) or [XDA Forums](https://xdaforums.com/t/kernel-a505-4-14-357-sovr-kernel-v4-0-oneui-4-1-6-1-tested-a11-a16-anykernel3-ksu-next.4803872/).
+> Report feedback on [GitHub Issues](https://github.com/SOVR-Technologies/SOVR-Kernel-A50/issues) or [XDA Forums](https://xdaforums.com/t/kernel-a505-4-14-357-sovr-kernel-v4-0-oneui-4-1-6-1-tested-a11-a16-anykernel3-ksu-next.4803872/), or support development via [GitHub Sponsors](https://github.com/sponsors/ruuiii-tk).
 
 ---
 
